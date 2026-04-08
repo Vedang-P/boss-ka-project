@@ -1,0 +1,90 @@
+{
+  "courses": [
+    {
+      "id": "bb-math204",
+      "code": "MA204",
+      "title": "Probability and Statistics",
+      "instructor": "Dr. Nikhil Bhat",
+      "current_grade_percent": 81.5
+    },
+    {
+      "id": "bb-db220",
+      "code": "DB220",
+      "title": "Database Systems",
+      "instructor": "Prof. Meera Kulkarni",
+      "current_grade_percent": 86.2
+    }
+  ],
+  "grade_components": {
+    "bb-math204": [
+      {"id": "b-gc-1", "name": "Quizzes", "weight_percent": 15},
+      {"id": "b-gc-2", "name": "Final Exam", "weight_percent": 35}
+    ],
+    "bb-db220": [
+      {"id": "b-gc-3", "name": "Lab Work", "weight_percent": 20},
+      {"id": "b-gc-4", "name": "Mini Project", "weight_percent": 20}
+    ]
+  },
+  "tasks": [
+    {
+      "id": "b-task-1",
+      "course_id": "bb-math204",
+      "component_id": "b-gc-1",
+      "title": "Bayesian Inference Quiz",
+      "type": "quiz",
+      "description": "Timed quiz covering conditional probability and Bayes theorem.",
+      "due_at": "2026-04-10T21:00:00+05:30",
+      "weight_percent": 7,
+      "difficulty": "medium",
+      "estimated_hours": 2,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    },
+    {
+      "id": "b-task-2",
+      "course_id": "bb-math204",
+      "component_id": "b-gc-2",
+      "title": "Statistics Final Revision Set",
+      "type": "exam",
+      "description": "Solve the faculty-curated revision booklet before the final exam.",
+      "due_at": "2026-04-20T10:00:00+05:30",
+      "weight_percent": 18,
+      "difficulty": "hard",
+      "estimated_hours": 6,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    },
+    {
+      "id": "b-task-3",
+      "course_id": "bb-db220",
+      "component_id": "b-gc-3",
+      "title": "Normalization Worksheet",
+      "type": "assignment",
+      "description": "Convert the case-study schema into 3NF and explain decomposition choices.",
+      "due_at": "2026-04-12T18:30:00+05:30",
+      "weight_percent": 10,
+      "difficulty": "medium",
+      "estimated_hours": 2.5,
+      "max_points": 100,
+      "earned_score_percent": 85,
+      "is_completed": true
+    },
+    {
+      "id": "b-task-4",
+      "course_id": "bb-db220",
+      "component_id": "b-gc-4",
+      "title": "Mini Project Checkpoint",
+      "type": "project",
+      "description": "Submit ER model, queries, and sample dataset for checkpoint evaluation.",
+      "due_at": "2026-04-15T23:00:00+05:30",
+      "weight_percent": 20,
+      "difficulty": "hard",
+      "estimated_hours": 7,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <h2>Create account</h2>
+    <p>Start building your personal study dashboard.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Sign up</button>
+    </form>
+</section>
+{% endblock %}

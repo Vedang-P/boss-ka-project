@@ -1,0 +1,90 @@
+{
+  "courses": [
+    {
+      "id": "canvas-cs301",
+      "code": "CS301",
+      "title": "Design and Analysis of Algorithms",
+      "instructor": "Dr. Shalini Iyer",
+      "current_grade_percent": 84.5
+    },
+    {
+      "id": "canvas-se210",
+      "code": "SE210",
+      "title": "Software Engineering",
+      "instructor": "Prof. Arvind Menon",
+      "current_grade_percent": 88.0
+    }
+  ],
+  "grade_components": {
+    "canvas-cs301": [
+      {"id": "c-gc-1", "name": "Labs", "weight_percent": 20},
+      {"id": "c-gc-2", "name": "Midterm", "weight_percent": 30}
+    ],
+    "canvas-se210": [
+      {"id": "c-gc-3", "name": "Sprint Deliverables", "weight_percent": 25},
+      {"id": "c-gc-4", "name": "Presentation", "weight_percent": 15}
+    ]
+  },
+  "tasks": [
+    {
+      "id": "c-task-1",
+      "course_id": "canvas-cs301",
+      "component_id": "c-gc-1",
+      "title": "Dynamic Programming Lab",
+      "type": "assignment",
+      "description": "Implement memoization and tabulation solutions for three benchmark problems.",
+      "due_at": "2026-04-11T20:00:00+05:30",
+      "weight_percent": 8,
+      "difficulty": "hard",
+      "estimated_hours": 4,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    },
+    {
+      "id": "c-task-2",
+      "course_id": "canvas-cs301",
+      "component_id": "c-gc-2",
+      "title": "Algorithm Midterm",
+      "type": "exam",
+      "description": "Closed-book written exam covering greedy methods, DP, and graph proofs.",
+      "due_at": "2026-04-16T09:00:00+05:30",
+      "weight_percent": 30,
+      "difficulty": "hard",
+      "estimated_hours": 8,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    },
+    {
+      "id": "c-task-3",
+      "course_id": "canvas-se210",
+      "component_id": "c-gc-3",
+      "title": "Sprint 3 Demo",
+      "type": "project",
+      "description": "Present backlog completion, burndown updates, and retrospective notes.",
+      "due_at": "2026-04-13T17:00:00+05:30",
+      "weight_percent": 12,
+      "difficulty": "medium",
+      "estimated_hours": 5,
+      "max_points": 100,
+      "earned_score_percent": 90,
+      "is_completed": true
+    },
+    {
+      "id": "c-task-4",
+      "course_id": "canvas-se210",
+      "component_id": "c-gc-4",
+      "title": "Architecture Presentation",
+      "type": "assignment",
+      "description": "Prepare slides on system architecture decisions and trade-offs.",
+      "due_at": "2026-04-18T14:00:00+05:30",
+      "weight_percent": 15,
+      "difficulty": "medium",
+      "estimated_hours": 3,
+      "max_points": 100,
+      "earned_score_percent": null,
+      "is_completed": false
+    }
+  ]
+}

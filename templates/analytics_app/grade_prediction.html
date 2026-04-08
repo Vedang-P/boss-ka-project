@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load dashboard_extras %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <h2>What-If Grade Prediction</h2>
+            <p>Enter predicted scores for open assessments to estimate final course outcomes.</p>
+        </div>
+        <form method="get" class="inline-form">
+            {{ filter_form.as_p }}
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="prediction-grid">
+            {% for task in open_tasks %}
+                <div class="task-card prediction-card">
+                    <div>
+                        <strong>{{ task.title }}</strong>
+                        <p>{% if task.course %}{{ task.course.title }}{% else %}Independent task{% endif %} | Weight {{ task.weight_percent }}%</p>
+                    </div>
+                    <label>
+                        What-if score %
+                        <input type="number" name="task_{{ task.pk }}" min="0" max="100" step="0.01" value="{{ what_if_scores|get_item:task.pk|default:'' }}">
+                    </label>
+                </div>
+            {% empty %}
+                <p>No open tasks available for prediction.</p>
+            {% endfor %}
+        </div>
+        {% if open_tasks %}
+            <button type="submit">Recalculate projection</button>
+        {% endif %}
+    </form>
+</section>
+
+<section class="grid two-col">
+    <article class="panel">
+        <h3>Overall Predicted Grade</h3>
+        <p class="display-grade">{{ projection.overall_predicted_percent }}%</p>
+    </article>
+
+    <article class="panel">
+        <h3>Per-Course Forecast</h3>
+        {% for result in projection.courses %}
+            <div class="course-grade-row">
+                <span>{{ result.course.title }}</span>
+                <strong>{{ result.predicted_percent }}%</strong>
+            </div>
+        {% empty %}
+            <p>No course data available yet.</p>
+        {% endfor %}
+    </article>
+</section>
+{% endblock %}

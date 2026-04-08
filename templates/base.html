@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Aggregator</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div>
+            <p class="eyebrow">Academic Deadline & Assignment Aggregator</p>
+            <h1><a href="{% url 'dashboard:home' %}">Student Command Center</a></h1>
+        </div>
+        <nav class="site-nav">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard:home' %}">Dashboard</a>
+                <a href="{% url 'integrations:connection_create' %}">Connect LMS</a>
+                <a href="{% url 'academics:manual_task_create' %}">Add Task</a>
+                <a href="{% url 'planner:availability' %}">Availability</a>
+                <a href="{% url 'analytics_app:grade_prediction' %}">Grade Prediction</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'accounts:signup' %}">Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

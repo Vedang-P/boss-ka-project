@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="grid two-col">
+    <article class="panel form-panel">
+        <h2>Weekly Availability</h2>
+        <p>Define your recurring free study slots so the planner can schedule sessions before deadlines.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save slot</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <h2>Saved Slots</h2>
+        {% for slot in slots %}
+            <div class="session-card">
+                <strong>{{ slot.get_weekday_display }}</strong>
+                <p>{{ slot.start_time }} to {{ slot.end_time }}</p>
+            </div>
+        {% empty %}
+            <p>No availability saved yet.</p>
+        {% endfor %}
+    </article>
+</section>
+{% endblock %}

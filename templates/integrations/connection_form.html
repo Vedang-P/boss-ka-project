@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel form-panel">
+    <h2>Connect an LMS</h2>
+    <p>Use demo mode for project evaluation, or configure live mode if you later obtain real Canvas or Blackboard credentials.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save connection</button>
+    </form>
+</section>
+{% endblock %}

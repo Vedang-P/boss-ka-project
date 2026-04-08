@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel form-panel">
+    <h2>Add Manual Task</h2>
+    <p>Track work that is not imported from an LMS.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add task</button>
+    </form>
+</section>
+{% endblock %}
