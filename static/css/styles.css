@@ -755,7 +755,7 @@ html[data-theme="dark"] .chip.is-active {
 
 .issue-row {
     display: grid;
-    grid-template-columns: 22px 1fr auto;
+    grid-template-columns: 22px minmax(0, 1fr) 230px;
     align-items: center;
     gap: var(--s3);
     padding: 9px var(--s5);
@@ -828,12 +828,12 @@ html[data-theme="dark"] .chip.is-active {
 }
 
 .issue-right {
-    display: flex;
+    display: grid;
+    grid-template-columns: 56px 52px 1fr;
     align-items: center;
     gap: var(--s3);
     flex-shrink: 0;
-    min-width: 172px;
-    justify-content: flex-end;
+    min-width: 230px;
 }
 
 .issue-due {
@@ -841,6 +841,7 @@ html[data-theme="dark"] .chip.is-active {
     color: var(--text-2);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    text-align: right;
 }
 
 .issue-due.is-overdue {
@@ -866,6 +867,8 @@ html[data-theme="dark"] .chip.is-active {
     align-items: center;
     gap: var(--s1);
     opacity: 1;
+    justify-content: flex-end;
+    min-width: 0;
 }
 
 /* ============================================================
@@ -1293,31 +1296,31 @@ textarea {
 .grade-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.grade-row-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--s3);
+    gap: var(--s2);
 }
 
 .grade-course-name {
     font-size: 12.5px;
     font-weight: 500;
     color: var(--text-0);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.grade-progress-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s3);
 }
 
 .grade-pct {
     font-size: 12px;
-    font-weight: 700;
-    color: var(--text-0);
+    font-weight: 600;
+    color: var(--text-1);
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
+    min-width: 56px;
+    text-align: right;
 }
 
 .grade-bar-track {
@@ -2061,6 +2064,7 @@ textarea {
     .issue-right {
         min-width: 0;
         width: 100%;
+        grid-template-columns: 56px 52px 1fr;
     }
 
     .page-body {

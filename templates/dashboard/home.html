@@ -113,19 +113,19 @@
                 <div class="grade-list">
                     {% for course_result in grade_projection.courses %}
                     <div class="grade-row">
-                            <div class="grade-row-head">
-                            <div class="grade-course-name">
-                                {{ course_result.course.code }} — {{ course_result.course.title }}
+                        <div class="grade-course-name">
+                            {{ course_result.course.code }} — {{ course_result.course.title }}
+                        </div>
+                        <div class="grade-progress-row">
+                            <div class="grade-bar-track">
+                                <div
+                                    class="grade-bar-fill"
+                                    style="width:{{ course_result.predicted_percent }}%;"
+                                ></div>
                             </div>
                             <div class="grade-pct">
                                 {{ course_result.predicted_percent }}%
                             </div>
-                        </div>
-                        <div class="grade-bar-track">
-                            <div
-                                class="grade-bar-fill"
-                                style="width:{{ course_result.predicted_percent }}%;"
-                            ></div>
                         </div>
                     </div>
                     {% empty %}
