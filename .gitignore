@@ -7,3 +7,4 @@ db.sqlite3
 /htmlcov
 .pytest_cache/
 .claude/
+.vercel

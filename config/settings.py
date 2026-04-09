@@ -34,7 +34,19 @@ def build_csrf_trusted_origins(default_origins):
 
 
 def get_database_config(debug):
-    database_url = os.getenv("DATABASE_URL", "").strip()
+    database_url = ""
+    for env_name in (
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "POSTGRES_PRISMA_URL",
+        "DATABASE_URL_UNPOOLED",
+        "POSTGRES_URL_NON_POOLING",
+    ):
+        value = os.getenv(env_name, "").strip()
+        if value:
+            database_url = value
+            break
+
     if database_url:
         return dj_database_url.parse(
             database_url,
