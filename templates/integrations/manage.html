@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">LMS Integrations</p>
+        <h2 class="page-title">Manage your connections.</h2>
+        <p class="page-description">Sync, review status, or remove each platform connection.</p>
+    </div>
+    <div class="hero-actions">
+        <a class="button" href="{% url 'integrations:connection_create' %}">Add connection</a>
+        <a class="button button-soft" href="{% url 'integrations:connection_sync_all' %}">Sync all</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="card reveal">
+    <div class="section-head">
+        <div>
+            <p class="label">Connections</p>
+            <h3>Active LMS platforms</h3>
+        </div>
+        <p class="muted">{{ connections|length }} connection(s)</p>
+    </div>
+    {% if connections %}
+        <div class="list">
+            {% for connection in connections %}
+                <div class="row" style="grid-template-columns:1fr auto;">
+                    <div>
+                        <div class="row-head">
+                            <p class="row-title">{{ connection.display_name }}</p>
+                            <span class="status-pill {% if connection.is_active %}status-open{% else %}status-done{% endif %}">
+                                {% if connection.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                        <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }} | {{ connection.get_auth_type_display }}</p>
+                        <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
+                        <p class="muted">Last sync: {{ connection.last_synced_at|default:"Never" }}</p>
+                        {% with last_log=connection.sync_logs.first %}
+                            {% if last_log %}
+                                <p class="muted">Last result: {{ last_log.get_status_display }} — {{ last_log.items_imported }} items imported</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="row-meta">
+                        <a class="button" href="{% url 'integrations:connection_sync' connection.pk %}">Sync</a>
+                        <a class="button button-soft" href="{% url 'integrations:connection_delete' connection.pk %}" style="border-color:var(--bad);color:var(--bad);">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">No LMS connections configured yet. <a href="{% url 'integrations:connection_create' %}">Add your first connection</a>.</p>
+    {% endif %}
+</section>
+{% endblock %}

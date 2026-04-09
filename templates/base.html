@@ -1,46 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Aggregator</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <header class="site-header">
-        <div>
-            <p class="eyebrow">Academic Deadline & Assignment Aggregator</p>
-            <h1><a href="{% url 'dashboard:home' %}">Student Command Center</a></h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Academic Aggregator</title>
+        {% load static %}
+        <script>
+            (function () {
+                var key = "study_theme";
+                var stored = localStorage.getItem(key);
+                var theme =
+                    stored === "dark" || stored === "light" ? stored : "light";
+                document.documentElement.setAttribute("data-theme", theme);
+            })();
+        </script>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        <div class="site-shell">
+            <header class="site-header reveal">
+                <div class="brand">
+                    <p class="kicker">
+                        Academic Deadline and Assignment Aggregator
+                    </p>
+                    <h1 class="brand-title">
+                        <a href="{% url 'dashboard:home' %}">Study Atlas</a>
+                    </h1>
+                </div>
+                <div class="header-controls">
+                    <nav class="site-nav">
+                        {% if user.is_authenticated %}
+                        <a
+                            class="nav-link {% if request.path == '/' %}is-active{% endif %}"
+                            href="{% url 'dashboard:home' %}"
+                            >Dashboard</a
+                        >
+                        <a
+                            class="nav-link {% if '/integrations/' in request.path %}is-active{% endif %}"
+                            href="{% url 'integrations:manage' %}"
+                            >LMS</a
+                        >
+                        <a
+                            class="nav-link {% if '/academics/' in request.path %}is-active{% endif %}"
+                            href="{% url 'academics:manual_task_create' %}"
+                            >Add Task</a
+                        >
+                        <a
+                            class="nav-link {% if '/planner/' in request.path %}is-active{% endif %}"
+                            href="{% url 'planner:availability' %}"
+                            >Planner</a
+                        >
+                        <a
+                            class="nav-link {% if '/analytics/' in request.path %}is-active{% endif %}"
+                            href="{% url 'analytics_app:grade_prediction' %}"
+                            >Grades</a
+                        >
+                        <a
+                            class="nav-link {% if '/accounts/profile' in request.path %}is-active{% endif %}"
+                            href="{% url 'accounts:profile' %}"
+                            >Profile</a
+                        >
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link nav-button">
+                                Logout
+                            </button>
+                        </form>
+                        {% else %}
+                        <a
+                            class="nav-link {% if '/login/' in request.path %}is-active{% endif %}"
+                            href="{% url 'login' %}"
+                            >Login</a
+                        >
+                        <a
+                            class="nav-link {% if '/signup/' in request.path %}is-active{% endif %}"
+                            href="{% url 'accounts:signup' %}"
+                            >Sign up</a
+                        >
+                        {% endif %}
+                    </nav>
+                    <button
+                        type="button"
+                        class="theme-toggle"
+                        data-theme-toggle
+                        aria-label="Toggle color theme"
+                    ></button>
+                </div>
+            </header>
+
+            <main class="page-shell">
+                {% block page_intro %}{% endblock %} {% if messages %}
+                <section class="messages">
+                    {% for message in messages %}
+                    <div class="message {{ message.tags }} reveal">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </section>
+                {% endif %} {% block content %}{% endblock %}
+            </main>
         </div>
-        <nav class="site-nav">
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard:home' %}">Dashboard</a>
-                <a href="{% url 'integrations:connection_create' %}">Connect LMS</a>
-                <a href="{% url 'academics:manual_task_create' %}">Add Task</a>
-                <a href="{% url 'planner:availability' %}">Availability</a>
-                <a href="{% url 'analytics_app:grade_prediction' %}">Grade Prediction</a>
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="link-button">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'accounts:signup' %}">Sign Up</a>
-            {% endif %}
-        </nav>
-    </header>
 
-    <main class="page-shell">
-        {% if messages %}
-            <section class="messages">
-                {% for message in messages %}
-                    <div class="message {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </section>
-        {% endif %}
-
-        {% block content %}{% endblock %}
-    </main>
-</body>
+        <script src="{% static 'js/app.js' %}"></script>
+    </body>
 </html>

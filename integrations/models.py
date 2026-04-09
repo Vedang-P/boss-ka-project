@@ -34,6 +34,16 @@ class LMSConnection(models.Model):
 
     class Meta:
         ordering = ("provider", "display_name")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("user", "display_name"),
+                name="uniq_lms_connection_name_per_user",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=("user", "provider"), name="lms_user_provider_idx"),
+            models.Index(fields=("user", "is_active"), name="lms_user_active_idx"),
+        ]
 
     def __str__(self):
         return f"{self.display_name} ({self.get_provider_display()})"
@@ -61,6 +71,9 @@ class SyncLog(models.Model):
 
     class Meta:
         ordering = ("-started_at",)
+        indexes = [
+            models.Index(fields=("connection", "-started_at"), name="synclog_connection_started_idx"),
+        ]
 
     def __str__(self):
         return f"{self.connection.display_name} - {self.status}"

@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from academics.models import Course, Task
 
+from .forms import StudyAvailabilityForm
 from .models import StudyAvailability
 from .services import generate_study_sessions
 
@@ -36,3 +37,14 @@ class PlannerServiceTests(TestCase):
         self.assertGreaterEqual(len(sessions), 1)
         self.assertTrue(all(session.task == task for session in sessions))
         self.assertTrue(all(session.start_at < task.due_at for session in sessions))
+
+    def test_availability_form_rejects_end_before_start(self):
+        form = StudyAvailabilityForm(
+            data={
+                "weekday": 1,
+                "start_time": "18:00",
+                "end_time": "16:00",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("end_time", form.errors)

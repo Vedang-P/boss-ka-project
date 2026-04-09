@@ -1,13 +1,36 @@
 {% extends "base.html" %}
 
+{% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">{% if editing %}Edit Task{% else %}Manual Tracking{% endif %}</p>
+        <h2 class="page-title">{% if editing %}Update task details.{% else %}Add non LMS work.{% endif %}</h2>
+    </div>
+    <p class="page-description">Manual tasks are included in prioritization, workload balance, and planner generation.</p>
+</section>
+{% endblock %}
+
 {% block content %}
-<section class="panel form-panel">
-    <h2>Add Manual Task</h2>
-    <p>Track work that is not imported from an LMS.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add task</button>
-    </form>
+<section class="split-layout reveal">
+    <article class="card note-card">
+        <p class="label">Tip</p>
+        <h3>Use realistic estimates</h3>
+        <p class="muted">Estimated hours and due date directly influence urgency and planner quality.</p>
+        {% if editing and task %}
+            <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+                <p class="label" style="color:var(--bad);">Danger Zone</p>
+                <p class="muted" style="margin-top:8px;">Permanently remove this task from your dashboard.</p>
+                <a class="button" href="{% url 'academics:task_delete' task.pk %}" style="margin-top:12px;border-color:#b95757;background:#fff0f0;color:#b95757;display:inline-flex;">Delete task</a>
+            </div>
+        {% endif %}
+    </article>
+    <article class="card form-card">
+        <h3>Task Details</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button">{% if editing %}Save changes{% else %}Add task{% endif %}</button>
+        </form>
+    </article>
 </section>
 {% endblock %}

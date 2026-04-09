@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import F
 
 
 class StudyAvailability(models.Model):
@@ -20,6 +21,19 @@ class StudyAvailability(models.Model):
 
     class Meta:
         ordering = ("weekday", "start_time")
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_time__gt=F("start_time")),
+                name="study_availability_end_after_start",
+            ),
+            models.UniqueConstraint(
+                fields=("user", "weekday", "start_time", "end_time"),
+                name="uniq_user_availability_slot",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=("user", "weekday"), name="availability_user_weekday_idx"),
+        ]
 
     def __str__(self):
         return f"{self.get_weekday_display()} {self.start_time}-{self.end_time}"
@@ -49,6 +63,16 @@ class StudySession(models.Model):
 
     class Meta:
         ordering = ("start_at",)
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_at__gt=F("start_at")),
+                name="study_session_end_after_start",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=("user", "start_at"), name="session_user_start_idx"),
+            models.Index(fields=("user", "status", "start_at"), name="session_user_status_start_idx"),
+        ]
 
     def __str__(self):
         return self.title

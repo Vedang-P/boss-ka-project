@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import StudyAvailabilityForm
 from .models import StudyAvailability
@@ -27,5 +27,38 @@ def generate_plan_view(request):
     if created:
         messages.success(request, f"Generated {len(created)} study sessions.")
     else:
-        messages.warning(request, "No study sessions were generated. Add availability or upcoming tasks first.")
+        messages.warning(
+            request,
+            "No study sessions were generated. Add availability or upcoming tasks first.",
+        )
     return redirect("dashboard:home")
+
+
+@login_required
+def slot_delete(request, pk):
+    """Delete an availability slot."""
+    from .models import StudyAvailability
+
+    slot = get_object_or_404(StudyAvailability, pk=pk, user=request.user)
+    if request.method == "POST":
+        slot.delete()
+        messages.success(request, "Availability slot removed.")
+    return redirect("planner:availability")
+
+
+@login_required
+def session_update_status(request, pk):
+    """Update a study session status. Accepts POST with 'status' field."""
+    from django.http import JsonResponse
+
+    from .models import StudySession
+
+    session = get_object_or_404(StudySession, pk=pk, user=request.user)
+    if request.method == "POST":
+        new_status = request.POST.get("status", "")
+        if new_status in ("completed", "skipped", "planned"):
+            session.status = new_status
+            session.save(update_fields=["status"])
+            return JsonResponse({"ok": True, "status": session.status})
+        return JsonResponse({"ok": False, "error": "Invalid status"}, status=400)
+    return JsonResponse({"ok": False, "error": "POST required"}, status=405)

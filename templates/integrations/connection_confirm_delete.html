@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">Danger Zone</p>
+        <h2 class="page-title">Remove this connection?</h2>
+        <p class="page-description">All courses and tasks imported via this connection will also be deleted.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="split-layout reveal">
+    <article class="card note-card">
+        <p class="label">Connection</p>
+        <h3>{{ connection.display_name }}</h3>
+        <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }}</p>
+        {% if connection.last_synced_at %}
+            <p class="muted">Last synced: {{ connection.last_synced_at|date:"d M Y H:i" }}</p>
+        {% else %}
+            <p class="muted">Never synced.</p>
+        {% endif %}
+    </article>
+    <article class="card form-card">
+        <h3>Confirm removal</h3>
+        <form method="post">
+            {% csrf_token %}
+            <p class="muted">Are you sure you want to remove <strong>{{ connection.display_name }}</strong>? All imported courses and tasks will be permanently deleted.</p>
+            <div style="display:flex;gap:12px;margin-top:16px;">
+                <button type="submit" class="button" style="border-color:#b95757;background:#fff0f0;color:#b95757;">Remove connection</button>
+                <a class="button button-soft" href="{% url 'integrations:manage' %}">Cancel</a>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

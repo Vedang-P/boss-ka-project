@@ -1,13 +1,20 @@
 {% extends "base.html" %}
+{% block body_class %}auth-page{% endblock %}
 
 {% block content %}
-<section class="panel auth-panel">
-    <h2>Create account</h2>
-    <p>Start building your personal study dashboard.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign up</button>
-    </form>
+<section class="auth-layout reveal">
+    <article class="card auth-copy">
+        <p class="label">Get started</p>
+        <h2 class="page-title">Create your account.</h2>
+        <p class="page-description">Sign up and begin tracking deadlines, priorities, and study sessions in one place.</p>
+    </article>
+    <article class="card form-card">
+        <h3>Create account</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button">Sign up</button>
+        </form>
+    </article>
 </section>
 {% endblock %}

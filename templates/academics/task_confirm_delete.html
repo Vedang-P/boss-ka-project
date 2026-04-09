@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">Danger Zone</p>
+        <h2 class="page-title">Delete this task?</h2>
+        <p class="page-description">This action cannot be undone. The task will be permanently removed.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="split-layout reveal">
+    <article class="card note-card">
+        <p class="label">Task</p>
+        <h3>{{ task.title }}</h3>
+        <p class="muted">{{ task.get_task_type_display }} | Due {{ task.due_at|date:"d M Y H:i" }}</p>
+        {% if task.course %}
+            <p class="muted">Course: {{ task.course.title }}</p>
+        {% endif %}
+    </article>
+    <article class="card form-card">
+        <h3>Confirm deletion</h3>
+        <form method="post">
+            {% csrf_token %}
+            <p class="muted">Are you sure you want to permanently delete <strong>{{ task.title }}</strong>?</p>
+            <div style="display:flex;gap:12px;margin-top:16px;">
+                <button type="submit" class="button" style="border-color:#b95757;background:#fff0f0;color:#b95757;">Delete permanently</button>
+                <a class="button button-soft" href="{% url 'dashboard:home' %}">Cancel</a>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

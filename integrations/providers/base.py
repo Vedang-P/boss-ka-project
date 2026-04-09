@@ -39,9 +39,14 @@ class BaseLMSProvider(ABC):
 
     def get(self, path, params=None):
         url = f"{self.connection.base_url.rstrip('/')}/{path.lstrip('/')}"
-        response = requests.get(url, headers=self.headers, params=params, timeout=15)
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = requests.get(url, headers=self.headers, params=params, timeout=15)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as exc:
+            raise ProviderError(f"Live request failed: {exc}") from exc
+        except ValueError as exc:
+            raise ProviderError("Live response was not valid JSON.") from exc
 
     def fetch_payload(self):
         valid, message = self.validate_credentials()

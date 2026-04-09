@@ -1,27 +1,63 @@
-{% extends "base.html" %}
-
-{% block content %}
-<section class="grid two-col">
-    <article class="panel form-panel">
-        <h2>Weekly Availability</h2>
-        <p>Define your recurring free study slots so the planner can schedule sessions before deadlines.</p>
+{% extends "base.html" %} {% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">Study Planner</p>
+        <h2 class="page-title">Set weekly availability.</h2>
+    </div>
+    <p class="page-description">
+        The planner uses these slots to place study sessions before important
+        deadlines.
+    </p>
+</section>
+{% endblock %} {% block content %}
+<section class="split-layout reveal">
+    <article class="card form-card">
+        <h3>Availability Slot</h3>
         <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save slot</button>
+            {% csrf_token %} {{ form.as_p }}
+            <button type="submit" class="button">Save slot</button>
         </form>
     </article>
 
-    <article class="panel">
-        <h2>Saved Slots</h2>
-        {% for slot in slots %}
-            <div class="session-card">
-                <strong>{{ slot.get_weekday_display }}</strong>
-                <p>{{ slot.start_time }} to {{ slot.end_time }}</p>
+    <article class="card note-card">
+        <p class="label">Saved Slots</p>
+        <h3>Current weekly windows</h3>
+        {% if slots %}
+        <div class="list">
+            {% for slot in slots %}
+            <div class="row" style="grid-template-columns: 1fr auto auto">
+                <div>
+                    <p class="row-title">{{ slot.get_weekday_display }}</p>
+                    <p class="muted">
+                        {{ slot.start_time|time:"H:i" }} – {{
+                        slot.end_time|time:"H:i" }}
+                    </p>
+                </div>
+                <form
+                    method="post"
+                    action="{% url 'planner:slot_delete' slot.pk %}"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="button button-soft"
+                        style="
+                            font-size: 0.82rem;
+                            padding: 6px 10px;
+                            border-color: var(--bad);
+                            color: var(--bad);
+                        "
+                        onclick="return confirm('Remove this slot?');"
+                    >
+                        Remove
+                    </button>
+                </form>
             </div>
-        {% empty %}
-            <p>No availability saved yet.</p>
-        {% endfor %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No availability slots saved yet.</p>
+        {% endif %}
     </article>
 </section>
 {% endblock %}

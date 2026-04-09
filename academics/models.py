@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 
@@ -25,7 +26,20 @@ class Course(models.Model):
 
     class Meta:
         ordering = ("title",)
-        unique_together = ("user", "connection", "external_id")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("user", "connection", "external_id"),
+                condition=Q(connection__isnull=False) & ~Q(external_id=""),
+                name="uniq_imported_course_external_id",
+            ),
+            models.CheckConstraint(
+                condition=Q(current_grade_percent__gte=0) & Q(current_grade_percent__lte=100),
+                name="course_current_grade_percent_range",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=("user", "title"), name="course_user_title_idx"),
+        ]
 
     def __str__(self):
         return f"{self.code} - {self.title}"
@@ -46,7 +60,22 @@ class GradeComponent(models.Model):
 
     class Meta:
         ordering = ("course", "name")
-        unique_together = ("course", "external_id")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("course", "external_id"),
+                condition=~Q(external_id=""),
+                name="uniq_grade_component_external_id",
+            ),
+            models.CheckConstraint(
+                condition=Q(weight_percent__gte=0) & Q(weight_percent__lte=100),
+                name="grade_component_weight_range",
+            ),
+            models.CheckConstraint(
+                condition=Q(override_weight_percent__isnull=True)
+                | (Q(override_weight_percent__gte=0) & Q(override_weight_percent__lte=100)),
+                name="grade_component_override_weight_range",
+            ),
+        ]
 
     @property
     def effective_weight_percent(self):
@@ -109,6 +138,35 @@ class Task(models.Model):
 
     class Meta:
         ordering = ("due_at", "-priority_score")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("user", "connection", "external_id"),
+                condition=Q(source="imported") & Q(connection__isnull=False) & ~Q(external_id=""),
+                name="uniq_imported_task_external_id",
+            ),
+            models.CheckConstraint(
+                condition=Q(weight_percent__gte=0) & Q(weight_percent__lte=100),
+                name="task_weight_percent_range",
+            ),
+            models.CheckConstraint(
+                condition=Q(estimated_hours__gte=0),
+                name="task_estimated_hours_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=Q(max_points__gt=0),
+                name="task_max_points_positive",
+            ),
+            models.CheckConstraint(
+                condition=Q(earned_score_percent__isnull=True)
+                | (Q(earned_score_percent__gte=0) & Q(earned_score_percent__lte=100)),
+                name="task_earned_score_percent_range",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=("user", "is_completed", "due_at"), name="task_user_due_idx"),
+            models.Index(fields=("course", "due_at"), name="task_course_due_idx"),
+            models.Index(fields=("user", "priority_score"), name="task_user_priority_idx"),
+        ]
 
     def __str__(self):
         return self.title

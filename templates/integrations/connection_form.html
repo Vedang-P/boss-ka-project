@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 
+{% block page_intro %}
+<section class="page-intro reveal">
+    <div>
+        <p class="kicker">LMS Setup</p>
+        <h2 class="page-title">Connect a platform.</h2>
+    </div>
+    <p class="page-description">Use demo mode for project walkthrough, or live mode if credentials are available.</p>
+</section>
+{% endblock %}
+
 {% block content %}
-<section class="panel form-panel">
-    <h2>Connect an LMS</h2>
-    <p>Use demo mode for project evaluation, or configure live mode if you later obtain real Canvas or Blackboard credentials.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save connection</button>
-    </form>
+<section class="split-layout reveal">
+    <article class="card note-card">
+        <p class="label">Guidance</p>
+        <h3>Recommended for demo</h3>
+        <p class="muted">Use provider in demo mode with simple names like Canvas Demo and Blackboard Demo.</p>
+    </article>
+    <article class="card form-card">
+        <h3>Connection Details</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button">Save connection</button>
+        </form>
+    </article>
 </section>
 {% endblock %}

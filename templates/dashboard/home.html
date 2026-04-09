@@ -1,143 +1,241 @@
 {% extends "base.html" %}
 
-{% block content %}
-<section class="hero panel">
+{% block page_intro %}
+<section class="page-intro reveal">
     <div>
-        <p class="eyebrow">Unified Dashboard</p>
-        <h2>Your academic workload, prioritized.</h2>
-        <p>Track imported LMS deadlines, manual tasks, workload spikes, grade forecasts, and study sessions from one place.</p>
+        <p class="kicker">Academic Command Center</p>
+        <h2 class="page-title">Plan smarter, study calmer, and track every deadline with clarity.</h2>
+        <p class="page-description">One screen for priorities, LMS sync health, grade trajectory, and study execution.</p>
     </div>
-    <div class="hero-stats">
-        <div class="stat-card">
-            <span>Upcoming Tasks</span>
-            <strong>{{ upcoming_tasks|length }}</strong>
+    <div class="hero-actions">
+        <a class="button" href="{% url 'integrations:manage' %}">Manage LMS</a>
+        <a class="button button-soft" href="{% url 'integrations:connection_sync_all' %}">Sync all</a>
+        <a class="button button-soft" href="{% url 'academics:manual_task_create' %}">Add manual task</a>
+        <a class="button button-soft" href="{% url 'planner:generate' %}">Generate study plan</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="stats-grid reveal">
+    <article class="card stat-card">
+        <p class="label">Upcoming Tasks</p>
+        <p class="value">{{ upcoming_tasks|length }}</p>
+        <p class="muted">Due in future</p>
+    </article>
+    <article class="card stat-card">
+        <p class="label">Due Today</p>
+        <p class="value">{{ due_today_open }}</p>
+        <p class="muted">Need immediate attention</p>
+    </article>
+    <article class="card stat-card">
+        <p class="label">High Priority Open</p>
+        <p class="value">{{ high_priority_open }}</p>
+        <p class="muted">Priority score &gt;= 70</p>
+    </article>
+    <article class="card stat-card">
+        <p class="label">Overdue Open</p>
+        <p class="value">{{ overdue_open }}</p>
+        <p class="muted">Past due deadline</p>
+    </article>
+    <article class="card stat-card">
+        <p class="label">Projected Grade</p>
+        <p class="value">{{ grade_projection.overall_predicted_percent }}%</p>
+        <p class="muted">Current what-if estimate</p>
+    </article>
+</section>
+
+<section class="card reveal">
+    <div class="section-head">
+        <div>
+            <p class="label">Progress</p>
+            <h3>Overall Completion</h3>
         </div>
-        <div class="stat-card">
-            <span>Weekly Hours</span>
-            <strong>{{ workload.weekly_hours }}</strong>
+        <p class="muted">{{ completed_tasks }} of {{ total_tasks }} tasks completed</p>
+    </div>
+    <div class="progress-wrap">
+        <div class="progress-bar">
+            <span style="width:{{ completion_percent }}%"></span>
         </div>
-        <div class="stat-card">
-            <span>Projected Grade</span>
-            <strong>{{ grade_projection.overall_predicted_percent }}%</strong>
-        </div>
+        <p class="progress-value">{{ completion_percent }}%</p>
     </div>
 </section>
 
-<section class="grid two-col">
-    <article class="panel">
-        <div class="section-header">
-            <h3>Connected LMS Sources</h3>
-            <a href="{% url 'integrations:connection_create' %}">Add connection</a>
+<section class="dashboard-grid">
+    <article class="card span-8 reveal" data-task-explorer>
+        <div class="section-head">
+            <div>
+                <p class="label">Task Explorer</p>
+                <h3>Search and filter all tasks</h3>
+            </div>
+            <p class="muted"><span data-task-count>{{ all_tasks|length }}</span> visible</p>
+        </div>
+        <div class="explorer-controls">
+            <input id="task-search" type="text" placeholder="Search by task or course">
+            <div class="chip-group">
+                <button type="button" class="chip is-active" data-task-filter="all">All</button>
+                <button type="button" class="chip" data-task-filter="high">High priority</button>
+                <button type="button" class="chip" data-task-filter="due">Due soon</button>
+                <button type="button" class="chip" data-task-filter="exam">Exam and quiz</button>
+                <button type="button" class="chip" data-task-filter="manual">Manual</button>
+                <button type="button" class="chip" data-task-filter="open">Open only</button>
+            </div>
+        </div>
+        <div class="list explorer-list" data-task-list>
+            {% for task in all_tasks %}
+                <div class="row explorer-row {% if task.is_completed %}is-complete{% endif %}"
+                     data-task-item
+                     data-title="{{ task.title|lower }}"
+                     data-course="{% if task.course %}{{ task.course.title|lower }}{% endif %}"
+                     data-type="{{ task.task_type }}"
+                     data-priority="{{ task.priority_score|floatformat:2 }}"
+                     data-days="{{ task.days_until_due }}"
+                     data-completed="{{ task.is_completed|yesno:'true,false' }}">
+                    <div>
+                        <div class="row-head">
+                            <p class="row-title">{{ task.title }}</p>
+                            <span class="status-pill {% if task.is_completed %}status-done{% else %}status-open{% endif %}">
+                                {% if task.is_completed %}Completed{% else %}Open{% endif %}
+                            </span>
+                        </div>
+                        <p class="muted">{% if task.course %}{{ task.course.title }}{% else %}Independent task{% endif %} | {{ task.get_task_type_display }}</p>
+                    </div>
+                    <div class="row-meta">
+                        <p class="muted">Due {{ task.due_at|date:"d M H:i" }}</p>
+                        <p class="muted">Priority {{ task.priority_score }}</p>
+                        <div style="display:flex;gap:6px;justify-content:flex-end;">
+                            <button type="button"
+                                    class="button button-soft task-toggle-btn"
+                                    style="font-size:0.8rem;padding:5px 10px;"
+                                    data-task-pk="{{ task.pk }}"
+                                    data-completed="{{ task.is_completed|yesno:'true,false' }}">
+                                {% if task.is_completed %}Reopen{% else %}Done{% endif %}
+                            </button>
+                            {% if task.source == "manual" %}
+                            <a class="button button-soft"
+                               href="{% url 'academics:task_edit' task.pk %}"
+                               style="font-size:0.8rem;padding:5px 10px;">Edit</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="muted" data-task-empty>No tasks available.</p>
+            {% endfor %}
+            <p class="muted hidden" data-task-empty>No tasks match your current filters.</p>
+        </div>
+    </article>
+
+    <article class="card span-4 reveal">
+        <div class="section-head">
+            <div>
+                <p class="label">Workload Radar</p>
+                <h3>7 day intensity map</h3>
+            </div>
+            <a class="action-link" href="{% url 'planner:availability' %}">Availability</a>
+        </div>
+        <div class="list">
+            {% for day in workload.days|slice:":7" %}
+                <div class="workload-row">
+                    <p class="row-title">{{ day.date|date:"D, d M" }}</p>
+                    <div class="bar {{ day.level }}">
+                        <span style="width:{% widthratio day.hours 8 100 %}%"></span>
+                    </div>
+                    <p class="muted">{{ day.hours }}h</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% if workload.high_days %}
+            <p class="alert muted">{{ workload.high_days|length }} high intensity day(s) detected.</p>
+        {% else %}
+            <p class="alert muted">No high intensity day in this horizon.</p>
+        {% endif %}
+    </article>
+
+    <article class="card span-6 reveal">
+        <div class="section-head">
+            <div>
+                <p class="label">LMS Connections</p>
+                <h3>Integration health</h3>
+            </div>
+            <a class="action-link" href="{% url 'integrations:manage' %}">Manage</a>
         </div>
         {% if connections %}
-            {% for connection in connections %}
-                <div class="connection-card">
-                    <div>
-                        <strong>{{ connection.display_name }}</strong>
-                        <p>{{ connection.get_provider_display }} | {{ connection.get_mode_display }} | {{ connection.get_auth_type_display }}</p>
-                        <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
+            <div class="list">
+                {% for connection in connections %}
+                    <div class="row">
+                        <div>
+                            <p class="row-title">{{ connection.display_name }}</p>
+                            <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }} | {{ connection.get_auth_type_display }}</p>
+                            <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
+                        </div>
+                        <div class="row-meta">
+                            <p class="muted">Last sync: {{ connection.last_synced_at|default:"Never" }}</p>
+                            <a class="button button-soft" href="{% url 'integrations:connection_sync' connection.pk %}">Sync</a>
+                        </div>
                     </div>
-                    <div>
-                        <p class="muted">Last sync: {{ connection.last_synced_at|default:"Never" }}</p>
-                        <a class="button-link" href="{% url 'integrations:connection_sync' connection.pk %}">Sync now</a>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No LMS connections yet. Add Canvas or Blackboard in demo mode to populate the dashboard.</p>
-        {% endif %}
-    </article>
-
-    <article class="panel">
-        <div class="section-header">
-            <h3>Workload Balance Warnings</h3>
-            <a href="{% url 'planner:availability' %}">Edit availability</a>
-        </div>
-        {% for day in workload.days|slice:":7" %}
-            <div class="workload-row">
-                <span>{{ day.date }}</span>
-                <div class="bar {{ day.level }}">
-                    <span style="width:{% widthratio day.hours 8 100 %}%"></span>
-                </div>
-                <small>{{ day.hours }} hrs | {{ day.weight }}%</small>
+                {% endfor %}
             </div>
-        {% endfor %}
-        {% if workload.high_days %}
-            <p class="warning-text">High-intensity days detected. Consider generating a study plan early.</p>
-        {% endif %}
-    </article>
-</section>
-
-<section class="grid two-col">
-    <article class="panel">
-        <div class="section-header">
-            <h3>Priority Queue</h3>
-            <a href="{% url 'academics:manual_task_create' %}">Add manual task</a>
-        </div>
-        {% if upcoming_tasks %}
-            {% for task in upcoming_tasks %}
-                <div class="task-card">
-                    <div>
-                        <strong>{{ task.title }}</strong>
-                        <p>{% if task.course %}{{ task.course.title }}{% else %}Independent task{% endif %} | {{ task.get_task_type_display }}</p>
-                    </div>
-                    <div class="task-meta">
-                        <span>Due {{ task.due_at|date:"d M H:i" }}</span>
-                        <span>{{ task.priority_score }} priority</span>
-                    </div>
-                </div>
-            {% endfor %}
         {% else %}
-            <p>No upcoming tasks yet.</p>
+            <p class="muted">No LMS connections yet.</p>
         {% endif %}
     </article>
 
-    <article class="panel">
-        <div class="section-header">
-            <h3>Study Planner</h3>
-            <a href="{% url 'planner:generate' %}">Generate sessions</a>
+    <article class="card span-6 reveal">
+        <div class="section-head">
+            <div>
+                <p class="label">Planner</p>
+                <h3>Upcoming study sessions</h3>
+            </div>
+            <a class="action-link" href="{% url 'planner:generate' %}">Regenerate</a>
         </div>
         {% if sessions %}
-            {% for session in sessions %}
-                <div class="session-card">
-                    <strong>{{ session.title }}</strong>
-                    <p>{{ session.start_at|date:"d M H:i" }} to {{ session.end_at|date:"H:i" }}</p>
-                </div>
-            {% endfor %}
+            <div class="list">
+                {% for session in sessions %}
+                    <div class="row">
+                        <p class="row-title">{{ session.title }}</p>
+                        <p class="muted">{{ session.start_at|date:"d M H:i" }} - {{ session.end_at|date:"H:i" }}</p>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <p>No study sessions generated yet. Add availability and generate a plan.</p>
+            <p class="muted">No generated sessions yet.</p>
         {% endif %}
     </article>
-</section>
 
-<section class="grid two-col">
-    <article class="panel">
-        <div class="section-header">
-            <h3>Grade Projection</h3>
-            <a href="{% url 'analytics_app:grade_prediction' %}">Open what-if calculator</a>
+    <article class="card span-6 reveal">
+        <div class="section-head">
+            <div>
+                <p class="label">Forecast</p>
+                <h3>Grade projection by course</h3>
+            </div>
+            <a class="action-link" href="{% url 'analytics_app:grade_prediction' %}">Open what-if</a>
         </div>
-        <p class="display-grade">{{ grade_projection.overall_predicted_percent }}%</p>
+        <p class="section-value">{{ grade_projection.overall_predicted_percent }}%</p>
         {% for course_result in grade_projection.courses %}
-            <div class="course-grade-row">
-                <span>{{ course_result.course.title }}</span>
-                <strong>{{ course_result.predicted_percent }}%</strong>
+            <div class="split-line">
+                <p>{{ course_result.course.title }}</p>
+                <p>{{ course_result.predicted_percent }}%</p>
             </div>
         {% empty %}
-            <p>Course projections will appear after your first sync.</p>
+            <p class="muted">Course projections appear after sync.</p>
         {% endfor %}
     </article>
 
-    <article class="panel">
-        <div class="section-header">
-            <h3>Task Mix</h3>
+    <article class="card span-6 reveal">
+        <div class="section-head">
+            <div>
+                <p class="label">Distribution</p>
+                <h3>Task mix breakdown</h3>
+            </div>
         </div>
         {% for item in task_counts %}
-            <div class="course-grade-row">
-                <span>{{ item.task_type|title }}</span>
-                <strong>{{ item.total }}</strong>
+            <div class="split-line">
+                <p>{{ item.task_type|title }}</p>
+                <p>{{ item.total }}</p>
             </div>
         {% empty %}
-            <p>No task data available yet.</p>
+            <p class="muted">No task data available.</p>
         {% endfor %}
     </article>
 </section>
