@@ -176,16 +176,98 @@ DJANGO_SECURE_HSTS_SECONDS="31536000"
 
 ## Live LMS Integration
 
-Switch any connection from `Demo` to `Live` mode and provide:
+The provider layer normalises raw JSON from each LMS into the same internal `Course` / `Task` schema, so urgency scores, grade prediction, and the study planner work identically for live and demo data.
 
-| Provider | Auth type | Required fields |
-|---|---|---|
-| Canvas | Token | Base URL (e.g. `https://canvas.institution.edu`) + Access Token |
-| Canvas | OAuth | Base URL + Client ID + Client Secret |
-| Blackboard | Token | Base URL + Access Token |
-| Blackboard | OAuth | Base URL + Client ID + Client Secret |
+---
 
-The provider layer normalises the raw JSON from each LMS into the same internal `Course` / `Task` schema, so all downstream features (urgency scores, planner, grade prediction) work identically for live and demo data.
+### Canvas — Personal Access Token (Recommended)
+
+Canvas personal access tokens work on any Canvas instance including the free **canvas.instructure.com** accounts. No admin approval is needed.
+
+#### Step 1 — Generate your token on the Canvas website
+
+1. Log in to your Canvas instance (e.g. `https://canvas.instructure.com`).
+2. Click your profile picture (top-left) → **Account → Settings**.
+3. Scroll down to **Approved Integrations**.
+4. Click **+ New Access Token**.
+5. Give it a purpose (e.g. *Study Atlas*) and an optional expiry date.
+6. Click **Generate Token** and copy the token — it is shown only once.
+
+> **Your Canvas base URL** is the root of the site you logged in to, e.g. `https://canvas.instructure.com`. Do not append any path.
+
+#### Step 2 — Add the connection in Study Atlas
+
+1. Go to **LMS → Add connection**.
+2. Fill in the form:
+
+| Field | Value |
+|---|---|
+| Display name | Canvas Live (or any label) |
+| Provider | Canvas |
+| Mode | **Live** |
+| Auth type | **Token** |
+| Base URL | `https://canvas.instructure.com` (or your institution's URL) |
+| Access token | the token you copied in Step 1 |
+
+3. Click **Save connection**, then **Sync** to import your real courses and assignments.
+
+---
+
+### Blackboard — OAuth2 Application (Client Credentials)
+
+Blackboard uses OAuth2 instead of personal tokens. You need to register an application in the **Anthology Developer Portal** to get a Client ID and Secret.
+
+#### Step 1 — Register your application (one-time)
+
+1. Go to **[developer.anthology.com](https://developer.anthology.com)** and sign in (or create a free account).
+2. Navigate to **My Applications → Register**.
+3. Fill in the application name, description, and domain.
+4. Under **API Access**, select the scopes you need:
+   - `Course: Read` — to list enrolled courses
+   - `Gradebook: Read` — to list gradebook columns / assessments
+5. Submit. Once approved, the portal shows you:
+   - **Application Key** — this is your **Client ID**
+   - **Secret** — this is your **Client Secret**
+   - **Application ID** — internal identifier (not needed in Study Atlas)
+
+> **Important:** You also need a Blackboard Learn instance URL to point the app at. Anthology provides developer sandbox instances — check your developer portal account for the sandbox URL assigned to your application (format: `https://[sandbox-id].blackboard.com`).
+
+#### Step 2 — Authorise your application on the Blackboard instance
+
+1. Log in to your Blackboard instance as an administrator (or use the developer sandbox admin).
+2. Go to **System Admin → REST API Integrations**.
+3. Click **Create Integration**.
+4. Paste your **Application ID** into the *Application ID* field.
+5. Set *Learn User* to an account with course-read permissions (your own account works on a sandbox).
+6. Set *End User Access* to **Yes** and *Authorised to Act as User* to **Service Default (Yes)**.
+7. Click **Submit**.
+
+#### Step 3 — Add the connection in Study Atlas
+
+1. Go to **LMS → Add connection**.
+2. Fill in the form:
+
+| Field | Value |
+|---|---|
+| Display name | Blackboard Live (or any label) |
+| Provider | Blackboard |
+| Mode | **Live** |
+| Auth type | **OAuth** |
+| Base URL | your Blackboard instance URL (e.g. `https://[sandbox-id].blackboard.com`) |
+| Client ID | your Application Key |
+| Client secret | your Secret |
+
+3. Click **Save connection**, then **Sync**.
+
+> **How it works under the hood:** On sync, Study Atlas POSTs to `{base_url}/learn/api/public/v1/oauth2/token` with `grant_type=client_credentials` and Basic auth to obtain a short-lived Bearer token, then uses that token for all subsequent API calls. The token is never stored permanently.
+
+---
+
+### Credentials Security Note
+
+- Tokens and secrets are stored only in the local SQLite database and masked in the UI (shown as `****`).
+- Never commit `db.sqlite3` to version control — it is already listed in `.gitignore`.
+- For a production deployment, rotate credentials regularly and use environment variables for `DJANGO_SECRET_KEY`.
 
 ---
 
