@@ -1,7 +1,7 @@
 /* ============================================================
    SECTION 1 — Google Font import
    ============================================================ */
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&display=swap");
 
 /* ============================================================
    SECTION 2 — CSS custom properties / tokens
@@ -27,7 +27,7 @@
     --r-pill: 999px;
 
     /* Font */
-    --font: "Inter", system-ui, -apple-system, sans-serif;
+    --font: "Source Sans 3", system-ui, -apple-system, sans-serif;
     --font-mono: "SF Mono", "Fira Code", "Consolas", monospace;
 
     /* Layout */
@@ -352,32 +352,23 @@ html[data-theme="dark"] .sidebar-item.is-active {
     display: flex;
     flex-direction: column;
     position: relative;
+    position: relative;
 }
 
-.theme-toggle-floating {
-    position: fixed;
+.main-area--public {
+    margin-left: 0;
+    min-height: 100vh;
+}
+
+.public-utility-bar {
+    position: absolute;
     top: var(--s5);
     right: var(--s5);
-    z-index: 120;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s2);
-    border: 1px solid var(--border-strong);
-    background: color-mix(in srgb, var(--bg-2) 88%, transparent);
-    color: var(--text-0);
-    border-radius: var(--r-pill);
-    padding: 8px 12px;
-    box-shadow: var(--shadow-md);
-    backdrop-filter: blur(10px);
-    transition:
-        background var(--t-fast),
-        border-color var(--t-fast),
-        transform var(--t-fast);
+    z-index: 10;
 }
 
-.theme-toggle-floating:hover {
-    background: var(--bg-hover);
-    transform: translateY(-1px);
+.theme-toggle-button {
+    min-width: 116px;
 }
 
 /* ============================================================
@@ -423,6 +414,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
     align-items: center;
     gap: var(--s2);
     flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .page-body {
@@ -1053,6 +1045,13 @@ html[data-theme="dark"] .badge-blackboard {
     font-size: 11.5px;
     padding: 4px 9px;
     border-radius: var(--r-sm);
+}
+
+.sidebar-footer > .sidebar-item {
+    width: calc(100% - var(--s4));
+    margin-left: var(--s2);
+    margin-right: var(--s2);
+    border: 1px solid transparent;
 }
 
 .btn-xs {
@@ -1973,11 +1972,6 @@ textarea {
         margin-left: 0;
     }
 
-    .theme-toggle-floating {
-        top: auto;
-        bottom: var(--s5);
-    }
-
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -2011,6 +2005,11 @@ textarea {
     .page-header {
         padding: var(--s3) var(--s4);
     }
+
+    .public-utility-bar {
+        top: var(--s4);
+        right: var(--s4);
+    }
 }
 
 @media (max-width: 540px) {
@@ -2022,8 +2021,15 @@ textarea {
         padding: var(--s6);
     }
 
-    .theme-toggle-floating {
-        right: var(--s4);
-        bottom: var(--s4);
+    .public-utility-bar {
+        position: static;
+        padding: var(--s4) var(--s4) 0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .main-area--public .auth-shell {
+        min-height: calc(100vh - 56px);
+        padding-top: var(--s6);
     }
 }

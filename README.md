@@ -1,342 +1,351 @@
-# Study Atlas — Academic Deadline & Assignment Aggregator
+# Study Atlas
 
-A full-stack Django web application that pulls assignments, exams, and deadlines from Canvas and Blackboard into a single intelligent dashboard. It goes beyond passive listing by computing urgency scores, visualising weekly crunch periods, projecting course grades, and auto-generating personalised study sessions.
+Study Atlas is a Django-based academic workload dashboard built for students who need one place to track assignments, exams, deadlines, grade impact, and study planning. It combines imported LMS data with manual tasks, then turns that data into a priority-ranked dashboard, workload warnings, grade predictions, and auto-generated study sessions.
 
----
+The project is intentionally built as a classic server-rendered Django application:
 
-## Features
+- Backend: Python + Django
+- Frontend: Django templates + custom CSS + vanilla JavaScript
+- Database: SQLite locally, PostgreSQL in production
+- Deployment target: Vercel (Python runtime)
 
-### Unified Dashboard
-- Aggregated view of every task across all connected LMS platforms and manual entries
-- Live stat cards: upcoming tasks, due today, high-priority open, overdue, and projected grade
-- Overall completion progress bar
+## What the app does
 
-### Smart Prioritisation (Urgency Score)
-Each task is scored out of 100 using four components:
-| Component | Weight | Logic |
-|---|---|---|
-| Due date proximity | up to 45 pts | Linear decay over 14 days; overdue tasks cap at 45 |
-| Assignment weight | up to 30 pts | Direct percentage of final grade |
-| Estimated time required | up to 10 pts | Hours × 2, capped at 10 |
-| Difficulty | 5 / 10 / 15 pts | Easy / Medium / Hard |
+- Aggregates coursework from Canvas and Blackboard through a shared LMS integration layer
+- Supports demo-backed LMS connections for showcase and grading use, even without real institutional access
+- Lets students add manual tasks that behave exactly like imported ones inside the dashboard, planner, and analytics
+- Scores each task using due date, weight, difficulty, and estimated effort
+- Warns users when specific days become overloaded
+- Predicts grades with a what-if calculator
+- Generates study sessions from recurring weekly availability
 
-### Task Explorer
-- Search by task title or course name
-- Filter chips: All · High Priority · Due Soon · Exam & Quiz · Manual · Open Only
-- Instant AJAX completion toggle (no page reload) — updates the pill, row style, and filter count live
-- Edit / Delete shortcut links on manually created tasks
+## Core features
 
-### Workload Radar
-- 7-day intensity bar chart with colour-coded levels (low / medium / high)
-- Automatic high-intensity day warnings
+### Unified dashboard
 
-### Grade Prediction (What-If Calculator)
-- Enter hypothetical scores for any open task
-- Instant weighted projection per course and overall GPA estimate
-- Filter by individual course
+- Upcoming tasks across all connected LMS sources and manual entries
+- Counts for due today, overdue, high-priority, completion percentage, and predicted grade
+- Workload heatmap for the next two weeks
+- Task explorer with search, filters, and completion toggles
+- Upcoming study sessions and sync/health visibility
 
-### Automated Study Planner
-- Set recurring weekly availability windows (any day, any start/end time)
-- One-click plan generation that slots 1-hour study blocks before each deadline
-- Respects a daily 4-hour study cap to prevent over-scheduling
-- Remove individual availability slots without clearing the whole schedule
+### Smart prioritization
 
-### LMS Integration
-- Canvas and Blackboard providers with **demo mode** (built-in fixture data) and **live mode** (real API credentials)
-- Token and OAuth2 authentication types supported
-- Per-connection sync with full sync log history (status, item count, timestamps)
-- Manage connections page: view health, sync individually, or delete with cascade removal of all imported data
+Each task gets an urgency score out of 100 using:
 
-### Profile & Preferences
-- Set timezone, preferred daily study hours, and a course load note
-- Preferences feed into planner slot generation
+- Due date proximity
+- Weight toward the final grade
+- Estimated hours required
+- Difficulty level
 
-### Auth & Security
-- Django built-in authentication (signup, login, logout)
-- Auto-created `StudentProfile` via signal on user registration
-- All views protected with `@login_required`
-- Environment-variable-driven production hardening (HSTS, SSL redirect, secure cookies)
-- Light / Dark theme toggle with `localStorage` persistence
+This score drives task ordering, dashboard emphasis, and planning behavior.
 
----
+### Grade prediction
 
-## Tech Stack
+- Per-course projected grade
+- Overall projected grade
+- Support for hypothetical future scores on open tasks
+- Uses explicit task weights first, then grade component weights where needed
 
-| Layer | Technology |
-|---|---|
-| Backend | Python 3.13 · Django 6.0 |
-| Database | SQLite (dev) · PostgreSQL-compatible |
-| Frontend | HTML5 · CSS3 (custom design system) · Vanilla JavaScript (ES2020) |
-| HTTP client | `requests` (live LMS API calls) |
-| Auth | Django built-in + OAuth2 credential scaffolding |
+### Study planner
 
----
+- Weekly recurring availability slots
+- Automatic study block generation before deadlines
+- Generated sessions stored in Django models so they can be displayed and updated later
 
-## Project Structure
+### LMS integration
 
-```
-.
-├── academics/          # Course, GradeComponent, Task models + manual task CRUD
-├── accounts/           # StudentProfile, signup, login, profile settings
-├── analytics_app/      # Urgency scoring, workload summary, grade projection services
-├── config/             # Django settings, root URL conf, WSGI/ASGI
-├── dashboard/          # Main dashboard view + dashboard_extras templatetag
-├── integrations/       # LMSConnection, SyncLog, Canvas/Blackboard providers, sync service
-├── planner/            # StudyAvailability, StudySession, study plan generator
-├── static/
-│   ├── css/styles.css  # Full custom design system (light + dark themes)
-│   └── js/app.js       # Theme toggle, scroll reveals, task explorer, AJAX toggle
-├── templates/
-│   ├── base.html
-│   ├── academics/      # Manual task form, edit form, delete confirmation
-│   ├── accounts/       # Signup, login, profile
-│   ├── analytics_app/  # Grade prediction / what-if calculator
-│   ├── dashboard/      # Main dashboard home
-│   ├── integrations/   # Add connection, manage connections, delete confirmation
-│   └── planner/        # Availability slots page
-├── integrations/
-│   ├── demo_data/      # canvas_demo.json · blackboard_demo.json
-│   └── providers/      # BaseLMSProvider, CanvasProvider, BlackboardProvider
-├── manage.py
-└── requirements.txt
-```
+- Canvas provider
+- Blackboard provider
+- Demo mode for both providers using realistic JSON fixtures
+- Live mode scaffolding with token/OAuth credential support
+- Sync logs with success/failure tracking
 
----
+## Django architecture
 
-## Local Setup
+This is a multi-app Django project. Each app owns one slice of the product.
+
+### `/accounts`
+
+Responsible for user-facing identity and preferences.
+
+- Signup flow
+- Profile editing
+- `StudentProfile` model
+- Showcase user seed command
+
+Important model:
+
+- `StudentProfile`
+  - timezone
+  - preferred daily study hours
+  - course load note
+
+### `/academics`
+
+Responsible for the academic domain model and manual task CRUD.
+
+Important models:
+
+- `Course`
+- `GradeComponent`
+- `Task`
+
+Important responsibilities:
+
+- manual task create/edit/delete
+- task completion toggling
+- priority score persistence on save
+
+### `/integrations`
+
+Responsible for LMS connections and imports.
+
+Important models:
+
+- `LMSConnection`
+- `SyncLog`
+
+Important responsibilities:
+
+- connection creation and management
+- demo/live mode switching
+- provider abstraction
+- payload normalization into local Django models
+- sync on login for due connections
+
+### `/analytics_app`
+
+Responsible for analytical logic.
+
+Important services:
+
+- urgency score calculation
+- workload summary generation
+- per-course grade projection
+- overall grade projection
+
+### `/planner`
+
+Responsible for study scheduling.
+
+Important models:
+
+- `StudyAvailability`
+- `StudySession`
+
+Important responsibilities:
+
+- saving weekly availability
+- generating study sessions from task urgency and free time
+- updating session status
+
+### `/dashboard`
+
+Responsible for the main authenticated homepage.
+
+Important responsibilities:
+
+- gathering data from academics, analytics, integrations, and planner
+- rendering the main showcase view
+- surfacing empty states and top-level metrics
+
+## Data flow
+
+The project follows a clear server-side flow:
+
+1. A user creates an LMS connection
+2. The connection syncs through a provider
+3. Provider payloads are normalized into local Django models
+4. Dashboard, planner, and analytics read only from local models
+5. This keeps the app fast, deterministic, and demo-friendly
+
+That design is important because the app does not depend on live LMS availability to render the dashboard.
+
+## Demo-backed integrations
+
+Real institutional Canvas/Blackboard access is not required for the project to work.
+
+The demo mode uses fixture payloads stored in:
+
+- `/Users/vedang/boss ka project/integrations/demo_data/canvas_demo.json`
+- `/Users/vedang/boss ka project/integrations/demo_data/blackboard_demo.json`
+
+These fixtures are passed through the same sync pipeline as live data, so the rest of the app does not care whether the source is demo or live.
+
+## Showcase account
+
+The repo includes a built-in demo account for presentation and evaluation.
+
+- Name: `Sarvesh Kumar`
+- Username: `sarvesh`
+- Password: `StudyAtlas@123`
+
+This account is seeded through a Django management command:
 
 ```bash
-# 1. Clone the repo and enter the project directory
-git clone <repo-url>
-cd "boss ka project"
+python manage.py seed_showcase_user
+```
 
-# 2. Create and activate a virtual environment
+The seed command:
+
+- creates or refreshes the user
+- syncs demo Canvas and Blackboard connections
+- adds manual tasks
+- adds weekly study availability
+- generates study sessions
+
+The same command is run automatically in the Vercel build script so the showcase account exists on deployed builds too.
+
+## Tech stack
+
+### Backend
+
+- Python
+- Django
+- Django ORM
+- WhiteNoise
+- dj-database-url
+- psycopg (for PostgreSQL in production)
+
+### Frontend
+
+- Django templates
+- custom CSS design system
+- vanilla JavaScript
+
+### Database
+
+- SQLite for local development
+- PostgreSQL via `DATABASE_URL` in production
+
+### Deployment
+
+- Vercel Python runtime
+
+## Local development
+
+### 1. Create a virtual environment
+
+```bash
+cd "/Users/vedang/boss ka project"
 python3 -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
+source .venv/bin/activate
+```
 
-# 3. Install dependencies
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# 4. Apply migrations
+### 3. Run migrations
+
+```bash
 python manage.py migrate
+```
 
-# 5. Create your account (or use the signup page)
-python manage.py createsuperuser
+### 4. Seed the showcase account
 
-# 6. Start the development server
+```bash
+python manage.py seed_showcase_user
+```
+
+### 5. Start the development server
+
+```bash
 python manage.py runserver
 ```
 
-Open `http://127.0.0.1:8000/` in your browser.
+Open:
 
----
+- `http://127.0.0.1:8000/`
+- `http://127.0.0.1:8000/accounts/login/`
 
-## Environment Variables
+## Production configuration
 
-The project reads optional environment variables so development and production share the same codebase.
+The project is configured to use environment variables for production behavior.
 
-```bash
-# Required in production — use a long random value
-DJANGO_SECRET_KEY="replace-with-a-50-char-random-string"
-
-# Set to "false" in production
-DJANGO_DEBUG="true"
-
-# Comma-separated list of hostnames
-DJANGO_ALLOWED_HOSTS="127.0.0.1,localhost"
-
-# Required if you serve behind a proxy or use HTTPS
-DJANGO_CSRF_TRUSTED_ORIGINS="http://127.0.0.1:8000"
-
-# Required in production on Vercel
-DATABASE_URL="postgres://user:password@host:5432/database"
-```
-
-For a production-like deployment:
-
-```bash
-DJANGO_DEBUG="false"
-DJANGO_SECURE_SSL_REDIRECT="true"
-DJANGO_SECURE_HSTS_SECONDS="31536000"
-```
-
----
-
-## Vercel Deployment
-
-The repository is now wired for Vercel's Python runtime:
-
-- `api/index.py` exposes the Django WSGI application
-- `vercel.json` rewrites incoming requests to the Django entrypoint
-- `build_files.sh` runs migrations and `collectstatic`
-- production uses `DATABASE_URL` and WhiteNoise for static files
-
-### Required Vercel Environment Variables
+Required variables:
 
 ```bash
 DJANGO_SECRET_KEY="replace-with-a-long-random-secret"
 DJANGO_DEBUG="false"
 DJANGO_ALLOWED_HOSTS=".vercel.app"
 DJANGO_CSRF_TRUSTED_ORIGINS="https://your-project.vercel.app"
-DATABASE_URL="postgres://user:password@host:5432/database"
+DATABASE_URL="postgresql://..."
 ```
 
-### Deployment Checklist
+Optional secure-production toggles:
 
-1. Create a Postgres database and copy its connection string into `DATABASE_URL`.
-2. Import the project into Vercel.
-3. Add the environment variables above in the Vercel dashboard.
-4. Deploy. Vercel will run `bash build_files.sh`, apply migrations, and collect static assets.
-5. Open the deployment URL and create your first account at `/accounts/signup/`.
-
----
-
-## Demo Flow (No LMS Credentials Required)
-
-1. **Sign up** at `/accounts/signup/`.
-2. Navigate to **LMS** in the top nav → **Add connection**.
-3. Create a connection: provider `Canvas`, mode `Demo`, any display name. Save.
-4. Create a second connection: provider `Blackboard`, mode `Demo`. Save.
-5. Click **Sync all** — the app imports 4 courses and 8 tasks with realistic due dates.
-6. Return to the **Dashboard** to see priority scores, workload radar, and grade projection.
-7. Open **Grades** (top nav) and enter hypothetical scores in the what-if calculator.
-8. Go to **Planner** → add a few weekly availability slots (e.g. Monday 09:00–17:00).
-9. Click **Generate study plan** on the dashboard — sessions are scheduled automatically.
-10. Toggle individual tasks as done directly from the dashboard using the **Done** button.
-
----
-
-## Live LMS Integration
-
-The provider layer normalises raw JSON from each LMS into the same internal `Course` / `Task` schema, so urgency scores, grade prediction, and the study planner work identically for live and demo data.
-
----
-
-### Canvas — Personal Access Token (Recommended)
-
-Canvas personal access tokens work on any Canvas instance including the free **canvas.instructure.com** accounts. No admin approval is needed.
-
-#### Step 1 — Generate your token on the Canvas website
-
-1. Log in to your Canvas instance (e.g. `https://canvas.instructure.com`).
-2. Click your profile picture (top-left) → **Account → Settings**.
-3. Scroll down to **Approved Integrations**.
-4. Click **+ New Access Token**.
-5. Give it a purpose (e.g. *Study Atlas*) and an optional expiry date.
-6. Click **Generate Token** and copy the token — it is shown only once.
-
-> **Your Canvas base URL** is the root of the site you logged in to, e.g. `https://canvas.instructure.com`. Do not append any path.
-
-#### Step 2 — Add the connection in Study Atlas
-
-1. Go to **LMS → Add connection**.
-2. Fill in the form:
-
-| Field | Value |
-|---|---|
-| Display name | Canvas Live (or any label) |
-| Provider | Canvas |
-| Mode | **Live** |
-| Auth type | **Token** |
-| Base URL | `https://canvas.instructure.com` (or your institution's URL) |
-| Access token | the token you copied in Step 1 |
-
-3. Click **Save connection**, then **Sync** to import your real courses and assignments.
-
----
-
-### Blackboard — OAuth2 Application (Client Credentials)
-
-Blackboard uses OAuth2 instead of personal tokens. You need to register an application in the **Anthology Developer Portal** to get a Client ID and Secret.
-
-#### Step 1 — Register your application (one-time)
-
-1. Go to **[developer.anthology.com](https://developer.anthology.com)** and sign in (or create a free account).
-2. Navigate to **My Applications → Register**.
-3. Fill in the application name, description, and domain.
-4. Under **API Access**, select the scopes you need:
-   - `Course: Read` — to list enrolled courses
-   - `Gradebook: Read` — to list gradebook columns / assessments
-5. Submit. Once approved, the portal shows you:
-   - **Application Key** — this is your **Client ID**
-   - **Secret** — this is your **Client Secret**
-   - **Application ID** — internal identifier (not needed in Study Atlas)
-
-> **Important:** You also need a Blackboard Learn instance URL to point the app at. Anthology provides developer sandbox instances — check your developer portal account for the sandbox URL assigned to your application (format: `https://[sandbox-id].blackboard.com`).
-
-#### Step 2 — Authorise your application on the Blackboard instance
-
-1. Log in to your Blackboard instance as an administrator (or use the developer sandbox admin).
-2. Go to **System Admin → REST API Integrations**.
-3. Click **Create Integration**.
-4. Paste your **Application ID** into the *Application ID* field.
-5. Set *Learn User* to an account with course-read permissions (your own account works on a sandbox).
-6. Set *End User Access* to **Yes** and *Authorised to Act as User* to **Service Default (Yes)**.
-7. Click **Submit**.
-
-#### Step 3 — Add the connection in Study Atlas
-
-1. Go to **LMS → Add connection**.
-2. Fill in the form:
-
-| Field | Value |
-|---|---|
-| Display name | Blackboard Live (or any label) |
-| Provider | Blackboard |
-| Mode | **Live** |
-| Auth type | **OAuth** |
-| Base URL | your Blackboard instance URL (e.g. `https://[sandbox-id].blackboard.com`) |
-| Client ID | your Application Key |
-| Client secret | your Secret |
-
-3. Click **Save connection**, then **Sync**.
-
-> **How it works under the hood:** On sync, Study Atlas POSTs to `{base_url}/learn/api/public/v1/oauth2/token` with `grant_type=client_credentials` and Basic auth to obtain a short-lived Bearer token, then uses that token for all subsequent API calls. The token is never stored permanently.
-
----
-
-### Credentials Security Note
-
-- Tokens and secrets are stored only in the local SQLite database and masked in the UI (shown as `****`).
-- Never commit `db.sqlite3` to version control — it is already listed in `.gitignore`.
-- For a production deployment, rotate credentials regularly and use environment variables for `DJANGO_SECRET_KEY`.
-
----
-
-## URL Reference
-
-| URL | View | Description |
-|---|---|---|
-| `/` | `dashboard:home` | Main dashboard |
-| `/accounts/signup/` | `accounts:signup` | Register |
-| `/accounts/login/` | `login` | Login |
-| `/accounts/profile/` | `accounts:profile` | Profile & preferences |
-| `/integrations/manage/` | `integrations:manage` | List / manage all LMS connections |
-| `/integrations/connect/` | `integrations:connection_create` | Add new LMS connection |
-| `/integrations/<pk>/sync/` | `integrations:connection_sync` | Sync one connection |
-| `/integrations/sync-all/` | `integrations:connection_sync_all` | Sync all connections |
-| `/integrations/<pk>/delete/` | `integrations:connection_delete` | Remove connection |
-| `/academics/manual/new/` | `academics:manual_task_create` | Add manual task |
-| `/academics/task/<pk>/edit/` | `academics:task_edit` | Edit manual task |
-| `/academics/task/<pk>/delete/` | `academics:task_delete` | Delete manual task |
-| `/academics/task/<pk>/toggle/` | `academics:task_toggle_complete` | Toggle done (JSON) |
-| `/planner/availability/` | `planner:availability` | Manage availability slots |
-| `/planner/slot/<pk>/delete/` | `planner:slot_delete` | Remove availability slot |
-| `/planner/generate/` | `planner:generate` | Generate study sessions |
-| `/planner/session/<pk>/status/` | `planner:session_update_status` | Update session status (JSON) |
-| `/analytics/grade-prediction/` | `analytics_app:grade_prediction` | What-if grade calculator |
-
----
-
-## Implementation Phases
-
-| Phase | Scope | Status |
-|---|---|---|
-| 1 | Requirements analysis and database schema design | ✅ Complete |
-| 2 | LMS API integration and demo data sync pipeline | ✅ Complete |
-| 3 | Frontend dashboard, task explorer, and all page templates | ✅ Complete |
-| 4 | Grade prediction, urgency scoring, and study planner logic | ✅ Complete |
-| 5 | Full CRUD (edit/delete tasks, manage connections, availability slots), AJAX interactions, profile settings, UI refinement | ✅ Complete |
+```bash
+DJANGO_SECURE_SSL_REDIRECT="true"
+DJANGO_SECURE_HSTS_SECONDS="31536000"
 ```
 
-Now let me commit everything:
+## Vercel deployment
+
+The repository includes the files needed for Django on Vercel:
+
+- `/Users/vedang/boss ka project/vercel.json`
+- `/Users/vedang/boss ka project/api/index.py`
+- `/Users/vedang/boss ka project/build_files.sh`
+
+Build behavior:
+
+1. `migrate`
+2. `seed_showcase_user`
+3. `collectstatic`
+
+That means the production deployment automatically:
+
+- applies schema updates
+- seeds the showcase user
+- prepares static files
+
+## Testing
+
+Run the full suite with:
+
+```bash
+python manage.py test
+```
+
+The test suite currently covers:
+
+- signup and profile flows
+- showcase seeding
+- manual task CRUD
+- dashboard rendering
+- integration sync behavior
+- planner generation behavior
+- deployment-related configuration checks
+
+## Manual showcase flow
+
+For a presentation, log in as the seeded demo user:
+
+- Username: `sarvesh`
+- Password: `StudyAtlas@123`
+
+Then walk through:
+
+1. Dashboard metrics and upcoming tasks
+2. Imported LMS coursework from Canvas and Blackboard demo connections
+3. Manual tasks mixed into the same dashboard
+4. Grade prediction page
+5. Study availability page
+6. Generated study sessions
+
+## Why Django was the right choice here
+
+This project benefits from Django because it needs:
+
+- relational data modeling
+- secure authentication
+- strong admin/debuggability
+- fast server-rendered dashboards
+- form handling and validation
+- a clean separation between domain apps
+
+For an academic management tool with several interacting modules, Django gives a stable backend foundation without forcing unnecessary frontend complexity.

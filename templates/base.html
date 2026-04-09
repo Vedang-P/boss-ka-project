@@ -94,6 +94,15 @@
                     </div>
                 </div>
                 <div class="sidebar-footer">
+                    <button
+                        type="button"
+                        class="sidebar-item"
+                        data-theme-toggle
+                        aria-label="Toggle color theme"
+                    >
+                        <span class="sidebar-icon" data-theme-icon>◐</span>
+                        <span class="sidebar-label" data-theme-label>Dark mode</span>
+                    </button>
                     <form
                         method="post"
                         action="{% url 'logout' %}"
@@ -111,16 +120,20 @@
             </aside>
             {% endif %}
 
-            <div class="main-area">
-                <button
-                    type="button"
-                    class="theme-toggle-floating"
-                    data-theme-toggle
-                    aria-label="Toggle color theme"
-                >
-                    <span data-theme-icon>◐</span>
-                    <span data-theme-label>Dark mode</span>
-                </button>
+            <div class="main-area{% if not user.is_authenticated %} main-area--public{% endif %}">
+                {% if not user.is_authenticated %}
+                <div class="public-utility-bar">
+                    <button
+                        type="button"
+                        class="btn btn-secondary btn-sm theme-toggle-button"
+                        data-theme-toggle
+                        aria-label="Toggle color theme"
+                    >
+                        <span data-theme-icon>◐</span>
+                        <span data-theme-label>Dark mode</span>
+                    </button>
+                </div>
+                {% endif %}
                 {% if messages %}
                 <div class="flash-list">
                     {% for message in messages %}

@@ -1,5 +1,6 @@
-{% extends "base.html" %} {% block title %}{% if editing %}Edit Task{% else
-%}Add Task{% endif %} — Study Atlas{% endblock %} {% block content %}
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit Task{% else %}Add Task{% endif %} — Study Atlas{% endblock %}
+{% block content %}
 <div class="page-header">
     <div class="page-header-left">
         <div class="page-title">
@@ -97,14 +98,14 @@
             </div>
             <div class="card-body">
                 <form method="post" class="django-form">
-                    {% csrf_token %} {{ form.as_p }}
+                    {% csrf_token %}
+                    {{ form.as_p }}
                     <button
                         type="submit"
                         class="btn btn-primary"
                         style="margin-top: var(--s4)"
                     >
-                        {% if editing %}Save changes{% else %}Add task{% endif
-                        %}
+                        {% if editing %}Save changes{% else %}Add task{% endif %}
                     </button>
                 </form>
             </div>

@@ -9,6 +9,15 @@ from .models import Course, Task
 
 
 class ManualTaskViewTests(TestCase):
+    def test_manual_task_form_page_renders(self):
+        user = User.objects.create_user(username="manualpage", password="pass12345")
+        self.client.login(username="manualpage", password="pass12345")
+
+        response = self.client.get(reverse("academics:manual_task_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Add Manual Task")
+
     def test_manual_task_creation_flow(self):
         user = User.objects.create_user(username="writer", password="pass12345")
         course = Course.objects.create(user=user, code="SE200", title="Software Design")

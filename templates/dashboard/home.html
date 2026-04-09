@@ -1,10 +1,11 @@
-{% extends "base.html" %} {% block title %}Dashboard — Study Atlas{% endblock %}
+{% extends "base.html" %}
+{% block title %}Dashboard — Study Atlas{% endblock %}
 {% block content %}
 <div class="page-header">
     <div class="page-header-left">
         <div class="page-title">Dashboard</div>
         <div class="page-subtitle">
-            {{ user.username }} · {{ user.student_profile.timezone }}
+            {{ user.get_full_name|default:user.username }} · {{ user.student_profile.course_load_note|default:user.student_profile.timezone }}
         </div>
     </div>
     <div class="page-actions">

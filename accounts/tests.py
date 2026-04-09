@@ -1,9 +1,18 @@
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
+from accounts.showcase import SHOWCASE_PASSWORD, SHOWCASE_USERNAME
+
 
 class AccountFlowTests(TestCase):
+    def test_login_page_uses_public_layout(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "main-area--public")
+
     def test_signup_creates_profile_and_redirects(self):
         response = self.client.post(
             reverse("accounts:signup"),
@@ -40,3 +49,12 @@ class AccountFlowTests(TestCase):
         user.refresh_from_db()
         self.assertEqual(user.student_profile.timezone, "Europe/London")
         self.assertEqual(user.student_profile.preferred_daily_study_hours, 5)
+
+    def test_showcase_seed_command_creates_demo_user(self):
+        call_command("seed_showcase_user")
+
+        user = User.objects.get(username=SHOWCASE_USERNAME)
+        self.assertTrue(user.check_password(SHOWCASE_PASSWORD))
+        self.assertEqual(user.first_name, "Sarvesh")
+        self.assertGreaterEqual(user.courses.count(), 2)
+        self.assertGreaterEqual(user.tasks.count(), 3)
