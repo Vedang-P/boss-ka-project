@@ -7,7 +7,10 @@
         {% load static %}
         <script>
             (function () {
-                var t = localStorage.getItem("sa_theme") || "light";
+                var t = "light";
+                try {
+                    t = localStorage.getItem("sa_theme") || "light";
+                } catch (e) {}
                 document.documentElement.setAttribute("data-theme", t);
             })();
         </script>
@@ -67,13 +70,17 @@
                             <span class="sidebar-icon">◷</span>
                             <span class="sidebar-label">Availability</span>
                         </a>
-                        <a
-                            class="sidebar-item"
-                            href="{% url 'planner:generate' %}"
+                        <form
+                            method="post"
+                            action="{% url 'planner:generate' %}"
+                            class="sidebar-form"
                         >
+                            {% csrf_token %}
+                            <button type="submit" class="sidebar-item">
                             <span class="sidebar-icon">↻</span>
                             <span class="sidebar-label">Generate Plan</span>
-                        </a>
+                            </button>
+                        </form>
                     </div>
                     <div class="sidebar-group">
                         <div class="sidebar-group-label">Account</div>
@@ -87,16 +94,10 @@
                     </div>
                 </div>
                 <div class="sidebar-footer">
-                    <button class="sidebar-item" data-theme-toggle>
-                        <span class="sidebar-icon" data-theme-icon>◐</span>
-                        <span class="sidebar-label" data-theme-label
-                            >Dark mode</span
-                        >
-                    </button>
                     <form
                         method="post"
                         action="{% url 'logout' %}"
-                        style="display: contents"
+                        class="sidebar-form"
                     >
                         {% csrf_token %}
                         <button type="submit" class="sidebar-item">
@@ -111,6 +112,15 @@
             {% endif %}
 
             <div class="main-area">
+                <button
+                    type="button"
+                    class="theme-toggle-floating"
+                    data-theme-toggle
+                    aria-label="Toggle color theme"
+                >
+                    <span data-theme-icon>◐</span>
+                    <span data-theme-label>Dark mode</span>
+                </button>
                 {% if messages %}
                 <div class="flash-list">
                     {% for message in messages %}
@@ -120,7 +130,9 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% endif %} {% block content %}{% endblock %}
+                {% endif %}
+                {% block page_intro %}{% endblock %}
+                {% block content %}{% endblock %}
             </div>
         </div>
         <script src="{% static 'js/app.js' %}"></script>

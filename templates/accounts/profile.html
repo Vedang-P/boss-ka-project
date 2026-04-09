@@ -1,41 +1,48 @@
 {% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">Account Settings</p>
-        <h2 class="page-title">Your profile preferences.</h2>
-        <p class="page-description">Study hours and timezone affect planner slot generation and workload display.</p>
-    </div>
-</section>
-{% endblock %}
-
+{% block title %}Profile - Study Atlas{% endblock %}
 {% block content %}
-<section class="split-layout reveal">
-    <article class="card note-card">
-        <p class="label">Account</p>
-        <h3>{{ request.user.username }}</h3>
-        <p class="muted">{{ request.user.email|default:"No email set" }}</p>
-        <p class="muted" style="margin-top:12px;">Member since {{ request.user.date_joined|date:"d M Y" }}</p>
-    </article>
-    <article class="card form-card">
-        <h3>Preferences</h3>
-        <form method="post">
-            {% csrf_token %}
-            <p>
-                <label for="id_timezone">Timezone</label>
-                <input type="text" id="id_timezone" name="timezone" value="{{ profile.timezone }}" placeholder="Asia/Kolkata">
-            </p>
-            <p>
-                <label for="id_daily_hours">Preferred daily study hours</label>
-                <input type="number" id="id_daily_hours" name="preferred_daily_study_hours" min="1" max="16" value="{{ profile.preferred_daily_study_hours }}">
-            </p>
-            <p>
-                <label for="id_note">Course load note (optional)</label>
-                <input type="text" id="id_note" name="course_load_note" value="{{ profile.course_load_note }}" placeholder="e.g. Final semester, heavy workload">
-            </p>
-            <button type="submit" class="button">Save preferences</button>
-        </form>
-    </article>
-</section>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Profile</div>
+        <div class="page-subtitle">
+            Study hours and timezone affect planner slot generation and workload display.
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="split-panel reveal">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Account</div>
+            </div>
+            <div class="card-body detail-list">
+                <div>
+                    <div class="text-soft text-xs">Username</div>
+                    <div class="entity-title">{{ request.user.username }}</div>
+                </div>
+                <div>
+                    <div class="text-soft text-xs">Email</div>
+                    <div class="text-sm">{{ request.user.email|default:"No email set" }}</div>
+                </div>
+                <div>
+                    <div class="text-soft text-xs">Member since</div>
+                    <div class="text-sm">{{ request.user.date_joined|date:"d M Y" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Preferences</div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="django-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary" style="margin-top: var(--s4)">Save preferences</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

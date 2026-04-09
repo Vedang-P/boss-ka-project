@@ -147,6 +147,9 @@ DJANGO_ALLOWED_HOSTS="127.0.0.1,localhost"
 
 # Required if you serve behind a proxy or use HTTPS
 DJANGO_CSRF_TRUSTED_ORIGINS="http://127.0.0.1:8000"
+
+# Required in production on Vercel
+DATABASE_URL="postgres://user:password@host:5432/database"
 ```
 
 For a production-like deployment:
@@ -156,6 +159,35 @@ DJANGO_DEBUG="false"
 DJANGO_SECURE_SSL_REDIRECT="true"
 DJANGO_SECURE_HSTS_SECONDS="31536000"
 ```
+
+---
+
+## Vercel Deployment
+
+The repository is now wired for Vercel's Python runtime:
+
+- `api/index.py` exposes the Django WSGI application
+- `vercel.json` rewrites incoming requests to the Django entrypoint
+- `build_files.sh` runs migrations and `collectstatic`
+- production uses `DATABASE_URL` and WhiteNoise for static files
+
+### Required Vercel Environment Variables
+
+```bash
+DJANGO_SECRET_KEY="replace-with-a-long-random-secret"
+DJANGO_DEBUG="false"
+DJANGO_ALLOWED_HOSTS=".vercel.app"
+DJANGO_CSRF_TRUSTED_ORIGINS="https://your-project.vercel.app"
+DATABASE_URL="postgres://user:password@host:5432/database"
+```
+
+### Deployment Checklist
+
+1. Create a Postgres database and copy its connection string into `DATABASE_URL`.
+2. Import the project into Vercel.
+3. Add the environment variables above in the Vercel dashboard.
+4. Deploy. Vercel will run `bash build_files.sh`, apply migrations, and collect static assets.
+5. Open the deployment URL and create your first account at `/accounts/signup/`.
 
 ---
 

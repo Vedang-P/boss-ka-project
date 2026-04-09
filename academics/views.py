@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import ManualTaskForm
 from .models import Task
@@ -23,20 +25,13 @@ def manual_task_create(request):
 
 
 @login_required
+@require_POST
 def task_toggle_complete(request, pk):
-    """Toggle the is_completed flag on a task. Accepts POST. Returns JSON."""
-    import json
-
-    from django.http import JsonResponse
-
+    """Toggle the is_completed flag on a task."""
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    if request.method == "POST":
-        task.is_completed = not task.is_completed
-        task.save()
-        return JsonResponse(
-            {"ok": True, "is_completed": task.is_completed, "pk": task.pk}
-        )
-    return JsonResponse({"ok": False, "error": "POST required"}, status=405)
+    task.is_completed = not task.is_completed
+    task.save()
+    return JsonResponse({"ok": True, "is_completed": task.is_completed, "pk": task.pk})
 
 
 @login_required

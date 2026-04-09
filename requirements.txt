@@ -1,2 +1,5 @@
 django==6.0.4
+dj-database-url==2.3.0
+psycopg[binary]==3.2.9
 requests==2.33.1
+whitenoise==6.9.0

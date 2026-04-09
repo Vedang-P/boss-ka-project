@@ -1,66 +1,85 @@
 {% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">LMS Integrations</p>
-        <h2 class="page-title">Manage your connections.</h2>
-        <p class="page-description">Sync, switch between demo and live mode, or remove each platform connection.</p>
-    </div>
-    <div class="hero-actions">
-        <a class="button" href="{% url 'integrations:connection_create' %}">Add connection</a>
-        <a class="button button-soft" href="{% url 'integrations:connection_sync_all' %}">Sync all</a>
-    </div>
-</section>
-{% endblock %}
-
+{% block title %}LMS Connections - Study Atlas{% endblock %}
 {% block content %}
-<section class="card reveal">
-    <div class="section-head">
-        <div>
-            <p class="label">Connections</p>
-            <h3>Active LMS platforms</h3>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">LMS Connections</div>
+        <div class="page-subtitle">
+            Sync, switch between demo and live mode, or remove each platform connection.
         </div>
-        <p class="muted">{{ connections|length }} connection(s)</p>
     </div>
-    {% if connections %}
-        <div class="list">
-            {% for connection in connections %}
-                <div class="row" style="grid-template-columns:1fr auto;">
-                    <div>
-                        <div class="row-head">
-                            <p class="row-title">{{ connection.display_name }}</p>
-                            <span class="status-pill {% if connection.mode == 'demo' %}mode-demo{% else %}mode-live{% endif %}">
+    <div class="page-actions">
+        <a class="btn btn-secondary btn-sm" href="{% url 'integrations:connection_create' %}">Add connection</a>
+        <form method="post" action="{% url 'integrations:connection_sync_all' %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-sm">Sync all</button>
+        </form>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="card reveal">
+        <div class="card-header">
+            <div class="card-title">
+                Active connections
+                <span class="card-title-count">{{ connections|length }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if connections %}
+            <div class="stack-list">
+                {% for connection in connections %}
+                <div class="entity-row">
+                    <div class="entity-main">
+                        <div class="entity-title-row">
+                            <div class="entity-title">{{ connection.display_name }}</div>
+                            <span class="badge {% if connection.mode == 'demo' %}badge-demo{% else %}badge-live{% endif %}">
                                 {{ connection.get_mode_display }}
                             </span>
-                            <span class="status-pill {% if connection.is_active %}status-open{% else %}status-done{% endif %}">
+                            <span class="badge {% if connection.is_active %}badge-green{% else %}badge-neutral{% endif %}">
                                 {% if connection.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </div>
-                        <p class="muted">{{ connection.get_provider_display }} &middot; {{ connection.get_auth_type_display }}</p>
-                        <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
-                        <p class="muted">Last sync: {{ connection.last_synced_at|date:"d M Y H:i"|default:"Never" }}</p>
+                        <div class="entity-meta">
+                            {{ connection.get_provider_display }} · {{ connection.get_auth_type_display }}
+                        </div>
+                        <div class="entity-meta">
+                            {{ connection.status_message|default:"Ready to sync." }}
+                        </div>
+                        <div class="entity-meta">
+                            Last sync: {{ connection.last_synced_at|date:"d M Y H:i"|default:"Never" }}
+                        </div>
                         {% with last_log=connection.sync_logs.first %}
                             {% if last_log %}
-                                <p class="muted">Last result: {{ last_log.get_status_display }} &mdash; {{ last_log.items_imported }} item(s) imported</p>
+                            <div class="entity-meta">
+                                Last result: {{ last_log.get_status_display }} · {{ last_log.items_imported }} item(s) imported
+                            </div>
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="row-meta">
-                        <a class="button" href="{% url 'integrations:connection_sync' connection.pk %}">Sync</a>
-                        <form method="post" action="{% url 'integrations:connection_toggle_mode' connection.pk %}" style="display:contents;">
+                    <div class="stack-actions">
+                        <form method="post" action="{% url 'integrations:connection_sync' connection.pk %}" class="inline-form">
                             {% csrf_token %}
-                            <button type="submit" class="button button-soft">
-                                {% if connection.mode == 'demo' %}Switch to Live{% else %}Switch to Demo{% endif %}
+                            <button type="submit" class="btn btn-secondary btn-sm">Sync</button>
+                        </form>
+                        <form method="post" action="{% url 'integrations:connection_toggle_mode' connection.pk %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-ghost btn-sm">
+                                {% if connection.mode == 'demo' %}Switch to live{% else %}Switch to demo{% endif %}
                             </button>
                         </form>
-                        <a class="button button-soft" href="{% url 'integrations:connection_delete' connection.pk %}" style="border-color:var(--bad);color:var(--bad);">Delete</a>
+                        <a class="btn btn-danger btn-sm" href="{% url 'integrations:connection_delete' connection.pk %}">Delete</a>
                     </div>
                 </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card-empty">
+                No LMS connections configured yet.
+                <a href="{% url 'integrations:connection_create' %}">Add your first connection.</a>
+            </div>
+            {% endif %}
         </div>
-    {% else %}
-        <p class="muted">No LMS connections configured yet. <a href="{% url 'integrations:connection_create' %}">Add your first connection</a>.</p>
-    {% endif %}
-</section>
+    </div>
+</div>
 {% endblock %}

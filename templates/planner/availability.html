@@ -1,63 +1,60 @@
-{% extends "base.html" %} {% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">Study Planner</p>
-        <h2 class="page-title">Set weekly availability.</h2>
+{% extends "base.html" %}
+{% block title %}Availability - Study Atlas{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Study Availability</div>
+        <div class="page-subtitle">
+            The planner uses these weekly slots to place study sessions before important deadlines.
+        </div>
     </div>
-    <p class="page-description">
-        The planner uses these slots to place study sessions before important
-        deadlines.
-    </p>
-</section>
-{% endblock %} {% block content %}
-<section class="split-layout reveal">
-    <article class="card form-card">
-        <h3>Availability Slot</h3>
-        <form method="post">
-            {% csrf_token %} {{ form.as_p }}
-            <button type="submit" class="button">Save slot</button>
-        </form>
-    </article>
+</div>
 
-    <article class="card note-card">
-        <p class="label">Saved Slots</p>
-        <h3>Current weekly windows</h3>
-        {% if slots %}
-        <div class="list">
-            {% for slot in slots %}
-            <div class="row" style="grid-template-columns: 1fr auto auto">
-                <div>
-                    <p class="row-title">{{ slot.get_weekday_display }}</p>
-                    <p class="muted">
-                        {{ slot.start_time|time:"H:i" }} – {{
-                        slot.end_time|time:"H:i" }}
-                    </p>
-                </div>
-                <form
-                    method="post"
-                    action="{% url 'planner:slot_delete' slot.pk %}"
-                >
+<div class="page-body">
+    <div class="split-panel reveal">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Add availability slot</div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="django-form">
                     {% csrf_token %}
-                    <button
-                        type="submit"
-                        class="button button-soft"
-                        style="
-                            font-size: 0.82rem;
-                            padding: 6px 10px;
-                            border-color: var(--bad);
-                            color: var(--bad);
-                        "
-                        onclick="return confirm('Remove this slot?');"
-                    >
-                        Remove
-                    </button>
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary" style="margin-top: var(--s4)">Save slot</button>
                 </form>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <p class="muted">No availability slots saved yet.</p>
-        {% endif %}
-    </article>
-</section>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Saved weekly windows</div>
+                <span class="card-title-count">{{ slots|length }}</span>
+            </div>
+            <div class="card-body">
+                {% if slots %}
+                <div class="stack-list">
+                    {% for slot in slots %}
+                    <div class="entity-row">
+                        <div class="entity-main">
+                            <div class="entity-title">{{ slot.get_weekday_display }}</div>
+                            <div class="entity-meta">
+                                {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                            </div>
+                        </div>
+                        <form method="post" action="{% url 'planner:slot_delete' slot.pk %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove this slot?');">
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="card-empty">No availability slots saved yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

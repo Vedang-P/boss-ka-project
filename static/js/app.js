@@ -10,20 +10,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const THEME_KEY = "sa_theme";
 
+  function getStoredTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY) || "light";
+    } catch (_error) {
+      return "light";
+    }
+  }
+
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(THEME_KEY, theme);
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (_error) {
+      // Ignore storage failures so the UI still works in restricted browsers.
+    }
 
     document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+      const icon = btn.querySelector("[data-theme-icon]");
+      const label = btn.querySelector("[data-theme-label]");
       if (theme === "dark") {
-        btn.textContent = "● Light mode";
+        if (icon) icon.textContent = "●";
+        if (label) label.textContent = "Light mode";
+        if (!icon && !label) btn.textContent = "● Light mode";
       } else {
-        btn.textContent = "◐ Dark mode";
+        if (icon) icon.textContent = "◐";
+        if (label) label.textContent = "Dark mode";
+        if (!icon && !label) btn.textContent = "◐ Dark mode";
       }
+      btn.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+      );
     });
   }
 
-  const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+  const savedTheme = getStoredTheme();
   applyTheme(savedTheme);
 
   document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {

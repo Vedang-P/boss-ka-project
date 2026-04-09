@@ -8,19 +8,31 @@
         </div>
     </div>
     <div class="page-actions">
-        <a
-            class="btn btn-secondary btn-sm"
-            href="{% url 'integrations:connection_sync_all' %}"
-            >↻ Sync all</a
+        <form
+            method="post"
+            action="{% url 'integrations:connection_sync_all' %}"
+            class="inline-form"
         >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary btn-sm">
+                ↻ Sync all
+            </button>
+        </form>
         <a
             class="btn btn-secondary btn-sm"
             href="{% url 'academics:manual_task_create' %}"
             >＋ Add task</a
         >
-        <a class="btn btn-primary btn-sm" href="{% url 'planner:generate' %}"
-            >Generate plan</a
+        <form
+            method="post"
+            action="{% url 'planner:generate' %}"
+            class="inline-form"
         >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-sm">
+                Generate plan
+            </button>
+        </form>
     </div>
 </div>
 
@@ -299,8 +311,7 @@
                                 data-task-pk="{{ task.pk }}"
                                 data-completed="{{ task.is_completed|yesno:'true,false' }}"
                             >
-                                {% if task.is_completed %}Reopen{% else %}Done{%
-                                endif %}
+                                {% if task.is_completed %}Reopen{% else %}Done{% endif %}
                             </button>
                             {% if task.source == 'manual' %}<a
                                 class="btn btn-ghost btn-xs"
@@ -358,11 +369,16 @@
                             </div>
                         </div>
                         <div class="conn-actions">
-                            <a
-                                class="btn btn-secondary btn-xs"
-                                href="{% url 'integrations:connection_sync' connection.pk %}"
-                                >Sync</a
+                            <form
+                                method="post"
+                                action="{% url 'integrations:connection_sync' connection.pk %}"
+                                class="inline-form"
                             >
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-xs">
+                                    Sync
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% empty %}
@@ -379,9 +395,16 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Study Sessions</div>
-                    <a class="card-action" href="{% url 'planner:generate' %}"
-                        >↻ Regenerate</a
+                    <form
+                        method="post"
+                        action="{% url 'planner:generate' %}"
+                        class="inline-form"
                     >
+                        {% csrf_token %}
+                        <button type="submit" class="card-action card-action-button">
+                            ↻ Regenerate
+                        </button>
+                    </form>
                 </div>
                 <div class="card-body" style="padding: 0">
                     {% if sessions %}

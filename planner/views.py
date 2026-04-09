@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import StudyAvailabilityForm
 from .models import StudyAvailability
@@ -22,6 +24,7 @@ def availability_view(request):
 
 
 @login_required
+@require_POST
 def generate_plan_view(request):
     created = generate_study_sessions(request.user)
     if created:
@@ -35,30 +38,25 @@ def generate_plan_view(request):
 
 
 @login_required
+@require_POST
 def slot_delete(request, pk):
     """Delete an availability slot."""
-    from .models import StudyAvailability
-
     slot = get_object_or_404(StudyAvailability, pk=pk, user=request.user)
-    if request.method == "POST":
-        slot.delete()
-        messages.success(request, "Availability slot removed.")
+    slot.delete()
+    messages.success(request, "Availability slot removed.")
     return redirect("planner:availability")
 
 
 @login_required
+@require_POST
 def session_update_status(request, pk):
-    """Update a study session status. Accepts POST with 'status' field."""
-    from django.http import JsonResponse
-
+    """Update a study session status."""
     from .models import StudySession
 
     session = get_object_or_404(StudySession, pk=pk, user=request.user)
-    if request.method == "POST":
-        new_status = request.POST.get("status", "")
-        if new_status in ("completed", "skipped", "planned"):
-            session.status = new_status
-            session.save(update_fields=["status"])
-            return JsonResponse({"ok": True, "status": session.status})
-        return JsonResponse({"ok": False, "error": "Invalid status"}, status=400)
-    return JsonResponse({"ok": False, "error": "POST required"}, status=405)
+    new_status = request.POST.get("status", "")
+    if new_status in ("completed", "skipped", "planned"):
+        session.status = new_status
+        session.save(update_fields=["status"])
+        return JsonResponse({"ok": True, "status": session.status})
+    return JsonResponse({"ok": False, "error": "Invalid status"}, status=400)

@@ -102,5 +102,22 @@ class IntegrationSyncTests(TestCase):
     def test_sync_all_route_handles_no_connections(self):
         user = User.objects.create_user(username="syncuser", password="pass12345")
         self.client.login(username="syncuser", password="pass12345")
-        response = self.client.get(reverse("integrations:connection_sync_all"))
+        response = self.client.post(reverse("integrations:connection_sync_all"))
         self.assertEqual(response.status_code, 302)
+
+    def test_sync_routes_require_post(self):
+        user = User.objects.create_user(username="syncguard", password="pass12345")
+        connection = LMSConnection.objects.create(
+            user=user,
+            display_name="Canvas Demo",
+            provider="canvas",
+            mode="demo",
+            auth_type="token",
+        )
+        self.client.login(username="syncguard", password="pass12345")
+
+        response = self.client.get(reverse("integrations:connection_sync", args=[connection.pk]))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.get(reverse("integrations:connection_sync_all"))
+        self.assertEqual(response.status_code, 405)

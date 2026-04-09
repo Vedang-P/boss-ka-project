@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from .exceptions import ProviderError
 from .forms import LMSConnectionForm
@@ -25,6 +25,7 @@ def connection_create(request):
 
 
 @login_required
+@require_POST
 def connection_sync(request, pk):
     connection = get_object_or_404(LMSConnection, pk=pk, user=request.user)
     try:
@@ -36,6 +37,7 @@ def connection_sync(request, pk):
 
 
 @login_required
+@require_POST
 def connection_sync_all(request):
     connections = LMSConnection.objects.filter(user=request.user, is_active=True)
     if not connections.exists():
@@ -89,31 +91,31 @@ def manage_connections(request):
 
 
 @login_required
+@require_POST
 def connection_toggle_mode(request, pk):
     """Flip a connection between demo and live mode, then re-sync."""
     connection = get_object_or_404(LMSConnection, pk=pk, user=request.user)
-    if request.method == "POST":
-        new_mode = "live" if connection.mode == "demo" else "demo"
-        connection.mode = new_mode
-        connection.last_synced_at = None
-        connection.status_message = (
-            f"Switched to {connection.get_mode_display()} mode. Sync to refresh data."
-        )
-        connection.save(
-            update_fields=["mode", "last_synced_at", "status_message", "updated_at"]
-        )
+    new_mode = "live" if connection.mode == "demo" else "demo"
+    connection.mode = new_mode
+    connection.last_synced_at = None
+    connection.status_message = (
+        f"Switched to {connection.get_mode_display()} mode. Sync to refresh data."
+    )
+    connection.save(
+        update_fields=["mode", "last_synced_at", "status_message", "updated_at"]
+    )
 
-        # Auto-sync so the dashboard reflects the new mode immediately
-        try:
-            sync_connection(connection)
-            messages.success(
-                request,
-                f"{connection.display_name} switched to {connection.get_mode_display()} mode and synced.",
-            )
-        except ProviderError as exc:
-            messages.warning(
-                request,
-                f"{connection.display_name} switched to {connection.get_mode_display()} mode, "
-                f"but sync failed: {exc}",
-            )
+    # Auto-sync so the dashboard reflects the new mode immediately
+    try:
+        sync_connection(connection)
+        messages.success(
+            request,
+            f"{connection.display_name} switched to {connection.get_mode_display()} mode and synced.",
+        )
+    except ProviderError as exc:
+        messages.warning(
+            request,
+            f"{connection.display_name} switched to {connection.get_mode_display()} mode, "
+            f"but sync failed: {exc}",
+        )
     return redirect("integrations:manage")

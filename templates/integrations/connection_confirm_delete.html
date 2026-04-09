@@ -1,37 +1,58 @@
 {% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">Danger Zone</p>
-        <h2 class="page-title">Remove this connection?</h2>
-        <p class="page-description">All courses and tasks imported via this connection will also be deleted.</p>
-    </div>
-</section>
-{% endblock %}
-
+{% block title %}Delete Connection - Study Atlas{% endblock %}
 {% block content %}
-<section class="split-layout reveal">
-    <article class="card note-card">
-        <p class="label">Connection</p>
-        <h3>{{ connection.display_name }}</h3>
-        <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }}</p>
-        {% if connection.last_synced_at %}
-            <p class="muted">Last synced: {{ connection.last_synced_at|date:"d M Y H:i" }}</p>
-        {% else %}
-            <p class="muted">Never synced.</p>
-        {% endif %}
-    </article>
-    <article class="card form-card">
-        <h3>Confirm removal</h3>
-        <form method="post">
-            {% csrf_token %}
-            <p class="muted">Are you sure you want to remove <strong>{{ connection.display_name }}</strong>? All imported courses and tasks will be permanently deleted.</p>
-            <div style="display:flex;gap:12px;margin-top:16px;">
-                <button type="submit" class="button" style="border-color:#b95757;background:#fff0f0;color:#b95757;">Remove connection</button>
-                <a class="button button-soft" href="{% url 'integrations:manage' %}">Cancel</a>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Remove Connection</div>
+        <div class="page-subtitle">
+            All courses and tasks imported via this connection will also be deleted.
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="split-panel reveal">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Connection details</div>
             </div>
-        </form>
-    </article>
-</section>
+            <div class="card-body detail-list">
+                <div>
+                    <div class="text-soft text-xs">Name</div>
+                    <div class="entity-title">{{ connection.display_name }}</div>
+                </div>
+                <div>
+                    <div class="text-soft text-xs">Provider</div>
+                    <div class="text-sm">{{ connection.get_provider_display }}</div>
+                </div>
+                <div>
+                    <div class="text-soft text-xs">Mode</div>
+                    <div class="text-sm">{{ connection.get_mode_display }}</div>
+                </div>
+                <div>
+                    <div class="text-soft text-xs">Last sync</div>
+                    <div class="text-sm">{{ connection.last_synced_at|date:"d M Y H:i"|default:"Never synced" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Confirm removal</div>
+            </div>
+            <div class="card-body">
+                <p class="text-soft">
+                    Are you sure you want to remove <strong>{{ connection.display_name }}</strong>?
+                    All imported courses and tasks will be permanently deleted.
+                </p>
+                <div class="stack-actions" style="margin-top: var(--s5)">
+                    <form method="post" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove connection</button>
+                    </form>
+                    <a class="btn btn-ghost" href="{% url 'integrations:manage' %}">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

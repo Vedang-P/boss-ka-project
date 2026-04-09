@@ -2,12 +2,13 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from academics.models import Course, Task
 
 from .forms import StudyAvailabilityForm
-from .models import StudyAvailability
+from .models import StudyAvailability, StudySession
 from .services import generate_study_sessions
 
 
@@ -48,3 +49,20 @@ class PlannerServiceTests(TestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn("end_time", form.errors)
+
+    def test_generate_plan_route_requires_post_and_slot_delete_works(self):
+        user = User.objects.create_user(username="plannerui", password="pass12345")
+        slot = StudyAvailability.objects.create(
+            user=user,
+            weekday=1,
+            start_time=timezone.datetime.strptime("18:00", "%H:%M").time(),
+            end_time=timezone.datetime.strptime("20:00", "%H:%M").time(),
+        )
+        self.client.login(username="plannerui", password="pass12345")
+
+        response = self.client.get(reverse("planner:generate"))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse("planner:slot_delete", args=[slot.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(StudyAvailability.objects.filter(pk=slot.pk).exists())

@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from academics.models import Course, Task
@@ -63,3 +64,23 @@ class AnalyticsServiceTests(TestCase):
 
         projection = overall_grade_projection(self.user, what_if_scores={task.pk: Decimal("80")})
         self.assertEqual(projection["overall_predicted_percent"], Decimal("80.00"))
+
+    def test_grade_prediction_view_handles_posted_what_if_scores(self):
+        task = Task.objects.create(
+            user=self.user,
+            course=self.course,
+            title="Scenario Quiz",
+            due_at=timezone.now() + timezone.timedelta(days=1),
+            weight_percent=Decimal("20"),
+            difficulty="medium",
+            estimated_hours=Decimal("2"),
+        )
+        self.client.login(username="student", password="pass12345")
+
+        response = self.client.post(
+            reverse("analytics_app:grade_prediction"),
+            {f"task_{task.pk}": "75"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "75.00%")

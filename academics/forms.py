@@ -6,7 +6,10 @@ from .models import Task
 class ManualTaskForm(forms.ModelForm):
     due_at = forms.DateTimeField(
         input_formats=["%Y-%m-%dT%H:%M"],
-        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        widget=forms.DateTimeInput(
+            attrs={"type": "datetime-local"},
+            format="%Y-%m-%dT%H:%M",
+        ),
     )
 
     class Meta:
