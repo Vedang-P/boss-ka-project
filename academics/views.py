@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .forms import ManualTaskForm
@@ -18,8 +19,11 @@ def manual_task_create(request):
         task.source = "manual"
         task.task_type = task.task_type or "manual"
         task.save()
-        messages.success(request, "Manual task added to your dashboard.")
-        return redirect("dashboard:home")
+        messages.success(request, f"Manual task '{task.title}' added to your dashboard.")
+        return redirect(f"{reverse('dashboard:home')}#task-{task.pk}")
+
+    if request.method == "POST":
+        messages.error(request, "Please correct the highlighted fields and try again.")
 
     return render(request, "academics/manual_task_form.html", {"form": form})
 

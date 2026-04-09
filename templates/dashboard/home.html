@@ -272,6 +272,7 @@
             <div class="issue-list">
                 {% for task in all_tasks %}
                 <div
+                    id="task-{{ task.pk }}"
                     class="issue-row {% if task.is_completed %}is-done{% endif %}"
                     data-task-item
                     data-title="{{ task.title|lower }}"

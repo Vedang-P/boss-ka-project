@@ -761,6 +761,7 @@ html[data-theme="dark"] .chip.is-active {
     padding: 9px var(--s5);
     border-bottom: 1px solid var(--border);
     transition: background var(--t-fast);
+    scroll-margin-top: 96px;
 }
 
 .issue-row:last-child {
@@ -769,6 +770,11 @@ html[data-theme="dark"] .chip.is-active {
 
 .issue-row:hover {
     background: var(--bg-hover);
+}
+
+.issue-row:target {
+    background: var(--accent-soft);
+    box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .issue-row.is-done {

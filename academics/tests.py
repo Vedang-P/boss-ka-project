@@ -46,6 +46,7 @@ class ManualTaskViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         task = Task.objects.get(title="Prepare viva notes")
         self.assertEqual(task.source, "manual")
+        self.assertTrue(response.url.endswith(f"#task-{task.pk}"))
 
     def test_manual_task_toggle_edit_and_delete_flow(self):
         user = User.objects.create_user(username="editor", password="pass12345")
