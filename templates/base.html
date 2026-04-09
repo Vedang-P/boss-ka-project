@@ -3,104 +3,126 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Academic Aggregator</title>
+        <title>{% block title %}Study Atlas{% endblock %}</title>
         {% load static %}
         <script>
             (function () {
-                var key = "study_theme";
-                var stored = localStorage.getItem(key);
-                var theme =
-                    stored === "dark" || stored === "light" ? stored : "light";
-                document.documentElement.setAttribute("data-theme", theme);
+                var t = localStorage.getItem("sa_theme") || "light";
+                document.documentElement.setAttribute("data-theme", t);
             })();
         </script>
         <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     </head>
-    <body class="{% block body_class %}{% endblock %}">
-        <div class="site-shell">
-            <header class="site-header reveal">
-                <div class="brand">
-                    <p class="kicker">
-                        Academic Deadline and Assignment Aggregator
-                    </p>
-                    <h1 class="brand-title">
-                        <a href="{% url 'dashboard:home' %}">Study Atlas</a>
-                    </h1>
+    <body>
+        <div class="app-shell">
+            {% if user.is_authenticated %}
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <div class="brand-mark">S</div>
+                    <div>
+                        <div class="brand-name">Study Atlas</div>
+                        <div class="brand-kicker">Academic Tracker</div>
+                    </div>
                 </div>
-                <div class="header-controls">
-                    <nav class="site-nav">
-                        {% if user.is_authenticated %}
+                <div class="sidebar-scroll">
+                    <div class="sidebar-group">
                         <a
-                            class="nav-link {% if request.path == '/' %}is-active{% endif %}"
+                            class="sidebar-item {% if request.path == '/' %}is-active{% endif %}"
                             href="{% url 'dashboard:home' %}"
-                            >Dashboard</a
                         >
+                            <span class="sidebar-icon">⊞</span>
+                            <span class="sidebar-label">Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-group">
+                        <div class="sidebar-group-label">Academics</div>
                         <a
-                            class="nav-link {% if '/integrations/' in request.path %}is-active{% endif %}"
+                            class="sidebar-item {% if '/integrations/' in request.path %}is-active{% endif %}"
                             href="{% url 'integrations:manage' %}"
-                            >LMS</a
                         >
+                            <span class="sidebar-icon">⇄</span>
+                            <span class="sidebar-label">LMS Connections</span>
+                        </a>
                         <a
-                            class="nav-link {% if '/academics/' in request.path %}is-active{% endif %}"
+                            class="sidebar-item {% if '/academics/' in request.path %}is-active{% endif %}"
                             href="{% url 'academics:manual_task_create' %}"
-                            >Add Task</a
                         >
+                            <span class="sidebar-icon">＋</span>
+                            <span class="sidebar-label">Add Task</span>
+                        </a>
                         <a
-                            class="nav-link {% if '/planner/' in request.path %}is-active{% endif %}"
-                            href="{% url 'planner:availability' %}"
-                            >Planner</a
-                        >
-                        <a
-                            class="nav-link {% if '/analytics/' in request.path %}is-active{% endif %}"
+                            class="sidebar-item {% if '/analytics/' in request.path %}is-active{% endif %}"
                             href="{% url 'analytics_app:grade_prediction' %}"
-                            >Grades</a
                         >
+                            <span class="sidebar-icon">◎</span>
+                            <span class="sidebar-label">Grade Predictor</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-group">
+                        <div class="sidebar-group-label">Planner</div>
                         <a
-                            class="nav-link {% if '/accounts/profile' in request.path %}is-active{% endif %}"
+                            class="sidebar-item {% if '/planner/' in request.path %}is-active{% endif %}"
+                            href="{% url 'planner:availability' %}"
+                        >
+                            <span class="sidebar-icon">◷</span>
+                            <span class="sidebar-label">Availability</span>
+                        </a>
+                        <a
+                            class="sidebar-item"
+                            href="{% url 'planner:generate' %}"
+                        >
+                            <span class="sidebar-icon">↻</span>
+                            <span class="sidebar-label">Generate Plan</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-group">
+                        <div class="sidebar-group-label">Account</div>
+                        <a
+                            class="sidebar-item {% if '/accounts/profile' in request.path %}is-active{% endif %}"
                             href="{% url 'accounts:profile' %}"
-                            >Profile</a
                         >
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link nav-button">
-                                Logout
-                            </button>
-                        </form>
-                        {% else %}
-                        <a
-                            class="nav-link {% if '/login/' in request.path %}is-active{% endif %}"
-                            href="{% url 'login' %}"
-                            >Login</a
-                        >
-                        <a
-                            class="nav-link {% if '/signup/' in request.path %}is-active{% endif %}"
-                            href="{% url 'accounts:signup' %}"
-                            >Sign up</a
-                        >
-                        {% endif %}
-                    </nav>
-                    <button
-                        type="button"
-                        class="theme-toggle"
-                        data-theme-toggle
-                        aria-label="Toggle color theme"
-                    ></button>
+                            <span class="sidebar-icon">◉</span>
+                            <span class="sidebar-label">Profile</span>
+                        </a>
+                    </div>
                 </div>
-            </header>
+                <div class="sidebar-footer">
+                    <button class="sidebar-item" data-theme-toggle>
+                        <span class="sidebar-icon" data-theme-icon>◐</span>
+                        <span class="sidebar-label" data-theme-label
+                            >Dark mode</span
+                        >
+                    </button>
+                    <form
+                        method="post"
+                        action="{% url 'logout' %}"
+                        style="display: contents"
+                    >
+                        {% csrf_token %}
+                        <button type="submit" class="sidebar-item">
+                            <span class="sidebar-icon">→</span>
+                            <span class="sidebar-label"
+                                >Logout ({{ user.username }})</span
+                            >
+                        </button>
+                    </form>
+                </div>
+            </aside>
+            {% endif %}
 
-            <main class="page-shell">
-                {% block page_intro %}{% endblock %} {% if messages %}
-                <section class="messages">
+            <div class="main-area">
+                {% if messages %}
+                <div class="flash-list">
                     {% for message in messages %}
-                    <div class="message {{ message.tags }} reveal">
+                    <div class="flash flash-{{ message.tags }}">
                         {{ message }}
+                        <button class="flash-close" type="button">✕</button>
                     </div>
                     {% endfor %}
-                </section>
+                </div>
                 {% endif %} {% block content %}{% endblock %}
-            </main>
+            </div>
         </div>
-
         <script src="{% static 'js/app.js' %}"></script>
     </body>
 </html>

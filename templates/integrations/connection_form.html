@@ -1,29 +1,87 @@
-{% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">LMS Setup</p>
-        <h2 class="page-title">Connect a platform.</h2>
+{% extends "base.html" %} {% block title %}Add Connection — Study Atlas{%
+endblock %} {% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Add LMS Connection</div>
+        <div class="page-subtitle">
+            Use Demo mode for walkthroughs. Switch to Live when you have real
+            credentials.
+        </div>
     </div>
-    <p class="page-description">Use demo mode for project walkthrough, or live mode if credentials are available.</p>
-</section>
-{% endblock %}
+    <div class="page-actions">
+        <a class="btn btn-ghost btn-sm" href="{% url 'integrations:manage' %}"
+            >← Back</a
+        >
+    </div>
+</div>
 
-{% block content %}
-<section class="split-layout reveal">
-    <article class="card note-card">
-        <p class="label">Guidance</p>
-        <h3>Recommended for demo</h3>
-        <p class="muted">Use provider in demo mode with simple names like Canvas Demo and Blackboard Demo.</p>
-    </article>
-    <article class="card form-card">
-        <h3>Connection Details</h3>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="button">Save connection</button>
-        </form>
-    </article>
-</section>
+<div class="page-body">
+    <div class="split-panel wide-right reveal">
+        <div class="card" style="align-self: start">
+            <div class="card-header"><div class="card-title">Tips</div></div>
+            <div
+                class="card-body"
+                style="display: flex; flex-direction: column; gap: var(--s4)"
+            >
+                <div>
+                    <div
+                        class="font-semibold text-sm"
+                        style="margin-bottom: var(--s1)"
+                    >
+                        Demo mode
+                    </div>
+                    <div class="text-xs text-soft">
+                        Uses built-in fixture data. No credentials required.
+                        Perfect for presentations.
+                    </div>
+                </div>
+                <hr class="card-divider" />
+                <div>
+                    <div
+                        class="font-semibold text-sm"
+                        style="margin-bottom: var(--s1)"
+                    >
+                        Canvas token auth
+                    </div>
+                    <div class="text-xs text-soft">
+                        Account → Settings → Approved Integrations → New Access
+                        Token. Base URL: your Canvas instance root (e.g.
+                        https://canvas.instructure.com).
+                    </div>
+                </div>
+                <hr class="card-divider" />
+                <div>
+                    <div
+                        class="font-semibold text-sm"
+                        style="margin-bottom: var(--s1)"
+                    >
+                        Blackboard OAuth
+                    </div>
+                    <div class="text-xs text-soft">
+                        Register an application at developer.anthology.com.
+                        Client ID = Application Key, Secret = Application
+                        Secret.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Connection Details</div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="django-form">
+                    {% csrf_token %} {{ form.as_p }}
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="margin-top: var(--s4)"
+                    >
+                        Save connection
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

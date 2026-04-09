@@ -1,242 +1,451 @@
-{% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">Academic Command Center</p>
-        <h2 class="page-title">Plan smarter, study calmer, and track every deadline with clarity.</h2>
-        <p class="page-description">One screen for priorities, LMS sync health, grade trajectory, and study execution.</p>
-    </div>
-    <div class="hero-actions">
-        <a class="button" href="{% url 'integrations:manage' %}">Manage LMS</a>
-        <a class="button button-soft" href="{% url 'integrations:connection_sync_all' %}">Sync all</a>
-        <a class="button button-soft" href="{% url 'academics:manual_task_create' %}">Add manual task</a>
-        <a class="button button-soft" href="{% url 'planner:generate' %}">Generate study plan</a>
-    </div>
-</section>
-{% endblock %}
-
+{% extends "base.html" %} {% block title %}Dashboard — Study Atlas{% endblock %}
 {% block content %}
-<section class="stats-grid reveal">
-    <article class="card stat-card">
-        <p class="label">Upcoming Tasks</p>
-        <p class="value">{{ upcoming_tasks|length }}</p>
-        <p class="muted">Due in future</p>
-    </article>
-    <article class="card stat-card">
-        <p class="label">Due Today</p>
-        <p class="value">{{ due_today_open }}</p>
-        <p class="muted">Need immediate attention</p>
-    </article>
-    <article class="card stat-card">
-        <p class="label">High Priority Open</p>
-        <p class="value">{{ high_priority_open }}</p>
-        <p class="muted">Priority score &gt;= 70</p>
-    </article>
-    <article class="card stat-card">
-        <p class="label">Overdue Open</p>
-        <p class="value">{{ overdue_open }}</p>
-        <p class="muted">Past due deadline</p>
-    </article>
-    <article class="card stat-card">
-        <p class="label">Projected Grade</p>
-        <p class="value">{{ grade_projection.overall_predicted_percent }}%</p>
-        <p class="muted">Current what-if estimate</p>
-    </article>
-</section>
-
-<section class="card reveal">
-    <div class="section-head">
-        <div>
-            <p class="label">Progress</p>
-            <h3>Overall Completion</h3>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">
+            {{ user.username }} · {{ user.student_profile.timezone }}
         </div>
-        <p class="muted">{{ completed_tasks }} of {{ total_tasks }} tasks completed</p>
     </div>
-    <div class="progress-wrap">
-        <div class="progress-bar">
-            <span style="width:{{ completion_percent }}%"></span>
-        </div>
-        <p class="progress-value">{{ completion_percent }}%</p>
+    <div class="page-actions">
+        <a
+            class="btn btn-secondary btn-sm"
+            href="{% url 'integrations:connection_sync_all' %}"
+            >↻ Sync all</a
+        >
+        <a
+            class="btn btn-secondary btn-sm"
+            href="{% url 'academics:manual_task_create' %}"
+            >＋ Add task</a
+        >
+        <a class="btn btn-primary btn-sm" href="{% url 'planner:generate' %}"
+            >Generate plan</a
+        >
     </div>
-</section>
+</div>
 
-<section class="dashboard-grid">
-    <article class="card span-8 reveal" data-task-explorer>
-        <div class="section-head">
-            <div>
-                <p class="label">Task Explorer</p>
-                <h3>Search and filter all tasks</h3>
+<div class="page-body">
+    <!-- Stat strip -->
+    <div class="stats-strip reveal">
+        <div class="stat-item">
+            <div class="stat-label">Upcoming</div>
+            <div class="stat-value" data-target="{{ upcoming_tasks|length }}">
+                {{ upcoming_tasks|length }}
             </div>
-            <p class="muted"><span data-task-count>{{ all_tasks|length }}</span> visible</p>
+            <div class="stat-sub">tasks due ahead</div>
         </div>
-        <div class="explorer-controls">
-            <input id="task-search" type="text" placeholder="Search by task or course">
-            <div class="chip-group">
-                <button type="button" class="chip is-active" data-task-filter="all">All</button>
-                <button type="button" class="chip" data-task-filter="high">High priority</button>
-                <button type="button" class="chip" data-task-filter="due">Due soon</button>
-                <button type="button" class="chip" data-task-filter="exam">Exam and quiz</button>
-                <button type="button" class="chip" data-task-filter="manual">Manual</button>
-                <button type="button" class="chip" data-task-filter="open">Open only</button>
+        <div class="stat-item">
+            <div class="stat-label">Due Today</div>
+            <div
+                class="stat-value {% if due_today_open %}stat-warn{% endif %}"
+                data-target="{{ due_today_open }}"
+            >
+                {{ due_today_open }}
             </div>
+            <div class="stat-sub">need attention now</div>
         </div>
-        <div class="list explorer-list" data-task-list>
-            {% for task in all_tasks %}
-                <div class="row explorer-row {% if task.is_completed %}is-complete{% endif %}"
-                     data-task-item
-                     data-title="{{ task.title|lower }}"
-                     data-course="{% if task.course %}{{ task.course.title|lower }}{% endif %}"
-                     data-type="{{ task.task_type }}"
-                     data-priority="{{ task.priority_score|floatformat:2 }}"
-                     data-days="{{ task.days_until_due }}"
-                     data-completed="{{ task.is_completed|yesno:'true,false' }}">
-                    <div>
-                        <div class="row-head">
-                            <p class="row-title">{{ task.title }}</p>
-                            <span class="status-pill {% if task.is_completed %}status-done{% else %}status-open{% endif %}">
-                                {% if task.is_completed %}Completed{% else %}Open{% endif %}
-                            </span>
-                        </div>
-                        <p class="muted">{% if task.course %}{{ task.course.title }}{% else %}Independent task{% endif %} | {{ task.get_task_type_display }}</p>
+        <div class="stat-item">
+            <div class="stat-label">High Priority</div>
+            <div
+                class="stat-value {% if high_priority_open %}stat-bad{% endif %}"
+                data-target="{{ high_priority_open }}"
+            >
+                {{ high_priority_open }}
+            </div>
+            <div class="stat-sub">score &ge; 70</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Overdue</div>
+            <div
+                class="stat-value {% if overdue_open %}stat-bad{% endif %}"
+                data-target="{{ overdue_open }}"
+            >
+                {{ overdue_open }}
+            </div>
+            <div class="stat-sub">past deadline</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Predicted Grade</div>
+            <div
+                class="stat-value stat-accent"
+                data-target="{{ grade_projection.overall_predicted_percent|floatformat:0 }}"
+                data-suffix="%"
+            >
+                {{ grade_projection.overall_predicted_percent }}%
+            </div>
+            <div class="stat-sub">weighted average</div>
+        </div>
+    </div>
+
+    <!-- Progress + workload row -->
+    <div class="split-panel wide-left reveal">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Overall Completion</div>
+                <span class="text-soft text-sm"
+                    >{{ completed_tasks }} / {{ total_tasks }} tasks</span
+                >
+            </div>
+            <div class="card-body">
+                <div class="progress-row" style="margin-bottom: var(--s4)">
+                    <div class="progress-bar-track">
+                        <div
+                            class="progress-bar-fill"
+                            style="width:{{ completion_percent }}%;"
+                        ></div>
                     </div>
-                    <div class="row-meta">
-                        <p class="muted">Due {{ task.due_at|date:"d M H:i" }}</p>
-                        <p class="muted">Priority {{ task.priority_score }}</p>
-                        <div style="display:flex;gap:6px;justify-content:flex-end;">
-                            <button type="button"
-                                    class="button button-soft task-toggle-btn"
-                                    style="font-size:0.8rem;padding:5px 10px;"
-                                    data-task-pk="{{ task.pk }}"
-                                    data-completed="{{ task.is_completed|yesno:'true,false' }}">
-                                {% if task.is_completed %}Reopen{% else %}Done{% endif %}
+                    <div class="progress-label">{{ completion_percent }}%</div>
+                </div>
+                <!-- Grade per course -->
+                <div class="grade-list">
+                    {% for course_result in grade_projection.courses %}
+                    <div class="grade-row">
+                        <div class="grade-row-head">
+                            <div class="grade-course-name">
+                                {{ course_result.course.code }} — {{
+                                course_result.course.title }}
+                            </div>
+                            <div class="grade-pct">
+                                {{ course_result.predicted_percent }}%
+                            </div>
+                        </div>
+                        <div class="grade-bar-track">
+                            <div
+                                class="grade-bar-fill"
+                                style="width:{{ course_result.predicted_percent }}%;"
+                            ></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-soft text-sm">
+                        Sync an LMS connection to see grade projections.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Workload · 14 days</div>
+                {% if workload.high_days %}<span class="badge badge-red"
+                    >{{ workload.high_days|length }} heavy day{{
+                    workload.high_days|length|pluralize }}</span
+                >{% endif %}
+            </div>
+            <div class="card-body">
+                <div class="heatmap-wrap">
+                    <div class="heatmap-label-row">
+                        <div class="heatmap-day-label">Mon</div>
+                        <div class="heatmap-day-label">Tue</div>
+                        <div class="heatmap-day-label">Wed</div>
+                        <div class="heatmap-day-label">Thu</div>
+                        <div class="heatmap-day-label">Fri</div>
+                        <div class="heatmap-day-label">Sat</div>
+                        <div class="heatmap-day-label">Sun</div>
+                    </div>
+                    <div class="heatmap-grid">
+                        {% for day in workload.days %}
+                        <div
+                            class="heatmap-cell {% if day.level == 'high' %}l3{% elif day.level == 'medium' %}l2{% elif day.hours > 0 %}l1{% endif %}"
+                            data-tip="{{ day.date|date:'d M' }}: {{ day.hours }}h"
+                        >
+                            <span class="heatmap-tooltip"
+                                >{{ day.date|date:"d M" }} · {{ day.hours
+                                }}h</span
+                            >
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div
+                    style="
+                        margin-top: var(--s4);
+                        display: flex;
+                        gap: var(--s2);
+                        align-items: center;
+                    "
+                >
+                    <span class="text-xs text-soft">Less</span>
+                    <div
+                        style="
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 3px;
+                            background: var(--bg-3);
+                            border: 1px solid var(--border);
+                        "
+                    ></div>
+                    <div
+                        style="
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 3px;
+                            background: var(--accent-soft);
+                            border: 1px solid var(--accent);
+                            opacity: 0.5;
+                        "
+                    ></div>
+                    <div
+                        style="
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 3px;
+                            background: var(--accent-soft);
+                            border: 1px solid var(--accent);
+                            opacity: 0.85;
+                        "
+                    ></div>
+                    <div
+                        style="
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 3px;
+                            background: var(--accent);
+                        "
+                    ></div>
+                    <span class="text-xs text-soft">More</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task explorer + sidebar cards row -->
+    <div class="dashboard-grid reveal">
+        <!-- Task explorer (spans 2 cols) -->
+        <div class="card col-span-2" data-task-explorer>
+            <div class="card-header">
+                <div class="card-title">
+                    Tasks
+                    <span class="card-title-count" data-task-count
+                        >{{ all_tasks|length }}</span
+                    >
+                </div>
+                <a
+                    class="card-action"
+                    href="{% url 'academics:manual_task_create' %}"
+                    >＋ Add manual</a
+                >
+            </div>
+            <div class="issue-list-filters">
+                <div class="search-input">
+                    <span class="search-input-icon">⌕</span>
+                    <input
+                        id="task-search"
+                        type="text"
+                        placeholder="Search tasks or courses…"
+                    />
+                </div>
+                <div class="chip-row">
+                    <button class="chip is-active" data-task-filter="all">
+                        All
+                    </button>
+                    <button class="chip" data-task-filter="open">Open</button>
+                    <button class="chip" data-task-filter="high">
+                        High priority
+                    </button>
+                    <button class="chip" data-task-filter="due">
+                        Due soon
+                    </button>
+                    <button class="chip" data-task-filter="exam">Exams</button>
+                    <button class="chip" data-task-filter="manual">
+                        Manual
+                    </button>
+                </div>
+            </div>
+            <div class="issue-list">
+                {% for task in all_tasks %}
+                <div
+                    class="issue-row {% if task.is_completed %}is-done{% endif %}"
+                    data-task-item
+                    data-title="{{ task.title|lower }}"
+                    data-course="{% if task.course %}{{ task.course.title|lower }}{% endif %}"
+                    data-type="{{ task.task_type }}"
+                    data-priority="{{ task.priority_score|floatformat:2 }}"
+                    data-days="{{ task.days_until_due }}"
+                    data-completed="{{ task.is_completed|yesno:'true,false' }}"
+                >
+                    <div
+                        class="issue-dot {% if task.is_completed %}dot-low{% elif task.priority_score >= 70 %}dot-urgent{% elif task.priority_score >= 40 %}dot-high{% elif task.priority_score >= 20 %}dot-medium{% else %}dot-low{% endif %}"
+                    ></div>
+                    <div class="issue-content">
+                        <div class="issue-title">{{ task.title }}</div>
+                        <div class="issue-badges">
+                            {% if task.course %}<span
+                                class="badge badge-neutral"
+                                >{{ task.course.code }}</span
+                            >{% endif %}
+                            <span
+                                class="badge {% if task.task_type == 'exam' %}badge-red{% elif task.task_type == 'quiz' %}badge-amber{% elif task.task_type == 'project' %}badge-purple{% else %}badge-neutral{% endif %}"
+                                >{{ task.get_task_type_display }}</span
+                            >
+                            {% if task.source == 'manual' %}<span
+                                class="badge badge-neutral"
+                                >Manual</span
+                            >{% endif %}
+                        </div>
+                    </div>
+                    <div class="issue-right">
+                        <span
+                            class="issue-due {% if task.days_until_due < 0 %}is-overdue{% elif task.days_until_due == 0 %}is-today{% endif %}"
+                            >{{ task.due_at|date:"d M" }}</span
+                        >
+                        <span class="issue-score"
+                            >{{ task.priority_score }}</span
+                        >
+                        <div class="issue-actions">
+                            <button
+                                class="btn btn-ghost btn-xs task-toggle-btn"
+                                data-task-pk="{{ task.pk }}"
+                                data-completed="{{ task.is_completed|yesno:'true,false' }}"
+                            >
+                                {% if task.is_completed %}Reopen{% else %}Done{%
+                                endif %}
                             </button>
-                            {% if task.source == "manual" %}
-                            <a class="button button-soft"
-                               href="{% url 'academics:task_edit' task.pk %}"
-                               style="font-size:0.8rem;padding:5px 10px;">Edit</a>
-                            {% endif %}
+                            {% if task.source == 'manual' %}<a
+                                class="btn btn-ghost btn-xs"
+                                href="{% url 'academics:task_edit' task.pk %}"
+                                >Edit</a
+                            >{% endif %}
                         </div>
                     </div>
                 </div>
-            {% empty %}
-                <p class="muted" data-task-empty>No tasks available.</p>
-            {% endfor %}
-            <p class="muted hidden" data-task-empty>No tasks match your current filters.</p>
-        </div>
-    </article>
-
-    <article class="card span-4 reveal">
-        <div class="section-head">
-            <div>
-                <p class="label">Workload Radar</p>
-                <h3>7 day intensity map</h3>
-            </div>
-            <a class="action-link" href="{% url 'planner:availability' %}">Availability</a>
-        </div>
-        <div class="list">
-            {% for day in workload.days|slice:":7" %}
-                <div class="workload-row">
-                    <p class="row-title">{{ day.date|date:"D, d M" }}</p>
-                    <div class="bar {{ day.level }}">
-                        <span style="width:{% widthratio day.hours 8 100 %}%"></span>
-                    </div>
-                    <p class="muted">{{ day.hours }}h</p>
+                {% empty %}
+                <div class="card-empty" data-task-empty>
+                    No tasks yet. Sync an LMS connection or add a manual task.
                 </div>
-            {% endfor %}
-        </div>
-        {% if workload.high_days %}
-            <p class="alert muted">{{ workload.high_days|length }} high intensity day(s) detected.</p>
-        {% else %}
-            <p class="alert muted">No high intensity day in this horizon.</p>
-        {% endif %}
-    </article>
-
-    <article class="card span-6 reveal">
-        <div class="section-head">
-            <div>
-                <p class="label">LMS Connections</p>
-                <h3>Integration health</h3>
+                {% endfor %}
+                <div class="card-empty hidden" data-task-empty>
+                    No tasks match your filters.
+                </div>
             </div>
-            <a class="action-link" href="{% url 'integrations:manage' %}">Manage</a>
         </div>
-        {% if connections %}
-            <div class="list">
-                {% for connection in connections %}
-                    <div class="row">
-                        <div>
-                            <p class="row-title">{{ connection.display_name }}</p>
-                            <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }} | {{ connection.get_auth_type_display }}</p>
-                            <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
+
+        <!-- Right column: LMS connections + planner sessions -->
+        <div style="display: flex; flex-direction: column; gap: var(--s5)">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">LMS Connections</div>
+                    <a
+                        class="card-action"
+                        href="{% url 'integrations:manage' %}"
+                        >Manage →</a
+                    >
+                </div>
+                <div class="conn-grid">
+                    {% for connection in connections %}
+                    <div class="conn-row">
+                        <span
+                            class="status-dot {% if connection.last_synced_at %}good{% else %}idle{% endif %}"
+                        ></span>
+                        <div class="conn-info">
+                            <div class="conn-name">
+                                {{ connection.display_name }}
+                                <span
+                                    class="badge {% if connection.mode == 'demo' %}badge-demo{% else %}badge-live{% endif %}"
+                                    >{{ connection.get_mode_display }}</span
+                                >
+                            </div>
+                            <div class="conn-meta">
+                                <span
+                                    class="badge {% if connection.provider == 'canvas' %}badge-canvas{% else %}badge-blackboard{% endif %}"
+                                    >{{ connection.get_provider_display }}</span
+                                >
+                                <span class="text-xs text-soft"
+                                    >{{ connection.last_synced_at|date:"d M
+                                    H:i"|default:"Never synced" }}</span
+                                >
+                            </div>
                         </div>
-                        <div class="row-meta">
-                            <p class="muted">Last sync: {{ connection.last_synced_at|default:"Never" }}</p>
-                            <a class="button button-soft" href="{% url 'integrations:connection_sync' connection.pk %}">Sync</a>
+                        <div class="conn-actions">
+                            <a
+                                class="btn btn-secondary btn-xs"
+                                href="{% url 'integrations:connection_sync' connection.pk %}"
+                                >Sync</a
+                            >
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="muted">No LMS connections yet.</p>
-        {% endif %}
-    </article>
-
-    <article class="card span-6 reveal">
-        <div class="section-head">
-            <div>
-                <p class="label">Planner</p>
-                <h3>Upcoming study sessions</h3>
-            </div>
-            <a class="action-link" href="{% url 'planner:generate' %}">Regenerate</a>
-        </div>
-        {% if sessions %}
-            <div class="list">
-                {% for session in sessions %}
-                    <div class="row">
-                        <p class="row-title">{{ session.title }}</p>
-                        <p class="muted">{{ session.start_at|date:"d M H:i" }} - {{ session.end_at|date:"H:i" }}</p>
+                    {% empty %}
+                    <div class="card-empty">
+                        No connections.
+                        <a href="{% url 'integrations:connection_create' %}"
+                            >Add one →</a
+                        >
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        {% else %}
-            <p class="muted">No generated sessions yet.</p>
-        {% endif %}
-    </article>
 
-    <article class="card span-6 reveal">
-        <div class="section-head">
-            <div>
-                <p class="label">Forecast</p>
-                <h3>Grade projection by course</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Study Sessions</div>
+                    <a class="card-action" href="{% url 'planner:generate' %}"
+                        >↻ Regenerate</a
+                    >
+                </div>
+                <div class="card-body" style="padding: 0">
+                    {% if sessions %}
+                    <div class="timeline" style="padding: var(--s4) var(--s5)">
+                        {% for session in sessions %}
+                        <div class="timeline-item">
+                            <div class="timeline-time">
+                                {{ session.start_at|date:"H:i" }}
+                            </div>
+                            <div class="timeline-track">
+                                <div class="timeline-dot"></div>
+                                {% if not forloop.last %}
+                                <div class="timeline-line"></div>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-body">
+                                <div class="timeline-title">
+                                    {{ session.title }}
+                                </div>
+                                <div class="timeline-sub">
+                                    {{ session.start_at|date:"d M" }} · {{
+                                    session.end_at|date:"H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="card-empty">
+                        No sessions.
+                        <a href="{% url 'planner:availability' %}"
+                            >Set availability →</a
+                        >
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            <a class="action-link" href="{% url 'analytics_app:grade_prediction' %}">Open what-if</a>
-        </div>
-        <p class="section-value">{{ grade_projection.overall_predicted_percent }}%</p>
-        {% for course_result in grade_projection.courses %}
-            <div class="split-line">
-                <p>{{ course_result.course.title }}</p>
-                <p>{{ course_result.predicted_percent }}%</p>
-            </div>
-        {% empty %}
-            <p class="muted">Course projections appear after sync.</p>
-        {% endfor %}
-    </article>
 
-    <article class="card span-6 reveal">
-        <div class="section-head">
-            <div>
-                <p class="label">Distribution</p>
-                <h3>Task mix breakdown</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Task Types</div>
+                </div>
+                <div class="card-body">
+                    {% for item in task_counts %}
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: var(--s1) 0;
+                            border-bottom: 1px solid var(--border);
+                        "
+                    >
+                        <span class="text-sm">{{ item.task_type|title }}</span>
+                        <span class="badge badge-neutral"
+                            >{{ item.total }}</span
+                        >
+                    </div>
+                    {% empty %}
+                    <p class="text-soft text-sm">No tasks yet.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% for item in task_counts %}
-            <div class="split-line">
-                <p>{{ item.task_type|title }}</p>
-                <p>{{ item.total }}</p>
-            </div>
-        {% empty %}
-            <p class="muted">No task data available.</p>
-        {% endfor %}
-    </article>
-</section>
+    </div>
+</div>
 {% endblock %}

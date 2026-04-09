@@ -1,20 +1,29 @@
-{% extends "base.html" %}
-{% block body_class %}auth-page{% endblock %}
-
+{% extends "base.html" %} {% block title %}Sign up — Study Atlas{% endblock %}
 {% block content %}
-<section class="auth-layout reveal">
-    <article class="card auth-copy">
-        <p class="label">Get started</p>
-        <h2 class="page-title">Create your account.</h2>
-        <p class="page-description">Sign up and begin tracking deadlines, priorities, and study sessions in one place.</p>
-    </article>
-    <article class="card form-card">
-        <h3>Create account</h3>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="button">Sign up</button>
+<div class="auth-shell">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="brand-mark">S</div>
+            <div class="brand-name">Study Atlas</div>
+        </div>
+        <div class="auth-heading">Create your account</div>
+        <div class="auth-sub">
+            Track deadlines, predict grades, and plan study sessions in one
+            place.
+        </div>
+        <form method="post" class="django-form">
+            {% csrf_token %} {{ form.as_p }}
+            <button
+                type="submit"
+                class="btn btn-primary w-full"
+                style="margin-top: var(--s4)"
+            >
+                Create account
+            </button>
         </form>
-    </article>
-</section>
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Log in →</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

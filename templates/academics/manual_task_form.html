@@ -1,36 +1,114 @@
-{% extends "base.html" %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">{% if editing %}Edit Task{% else %}Manual Tracking{% endif %}</p>
-        <h2 class="page-title">{% if editing %}Update task details.{% else %}Add non LMS work.{% endif %}</h2>
+{% extends "base.html" %} {% block title %}{% if editing %}Edit Task{% else
+%}Add Task{% endif %} — Study Atlas{% endblock %} {% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">
+            {% if editing %}Edit Task{% else %}Add Manual Task{% endif %}
+        </div>
+        <div class="page-subtitle">
+            Manual tasks are scored, workload-balanced, and included in study
+            plan generation.
+        </div>
     </div>
-    <p class="page-description">Manual tasks are included in prioritization, workload balance, and planner generation.</p>
-</section>
-{% endblock %}
+    <div class="page-actions">
+        <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:home' %}"
+            >← Dashboard</a
+        >
+        {% if editing and task %}<a
+            class="btn btn-danger btn-sm"
+            href="{% url 'academics:task_delete' task.pk %}"
+            >Delete</a
+        >{% endif %}
+    </div>
+</div>
 
-{% block content %}
-<section class="split-layout reveal">
-    <article class="card note-card">
-        <p class="label">Tip</p>
-        <h3>Use realistic estimates</h3>
-        <p class="muted">Estimated hours and due date directly influence urgency and planner quality.</p>
-        {% if editing and task %}
-            <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
-                <p class="label" style="color:var(--bad);">Danger Zone</p>
-                <p class="muted" style="margin-top:8px;">Permanently remove this task from your dashboard.</p>
-                <a class="button" href="{% url 'academics:task_delete' task.pk %}" style="margin-top:12px;border-color:#b95757;background:#fff0f0;color:#b95757;display:inline-flex;">Delete task</a>
+<div class="page-body">
+    <div class="split-panel wide-right reveal">
+        <div style="display: flex; flex-direction: column; gap: var(--s5)">
+            <div class="card" style="align-self: start">
+                <div class="card-header">
+                    <div class="card-title">Urgency Preview</div>
+                </div>
+                <div class="card-body" style="text-align: center">
+                    <div
+                        class="stat-value"
+                        data-urgency-preview
+                        style="font-size: 48px"
+                    >
+                        —
+                    </div>
+                    <div class="text-xs text-soft mt-2">out of 100</div>
+                    <div style="margin-top: var(--s3)">
+                        <div class="grade-bar-track">
+                            <div
+                                class="grade-bar-fill urgency-bar-fill"
+                                style="width: 0%; animation: none"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
-    </article>
-    <article class="card form-card">
-        <h3>Task Details</h3>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="button">{% if editing %}Save changes{% else %}Add task{% endif %}</button>
-        </form>
-    </article>
-</section>
+            <div class="card" style="align-self: start">
+                <div class="card-header">
+                    <div class="card-title">Scoring Guide</div>
+                </div>
+                <div
+                    class="card-body"
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--s3);
+                    "
+                >
+                    <div
+                        style="display: flex; justify-content: space-between"
+                        class="text-sm"
+                    >
+                        <span class="text-soft">Due date proximity</span
+                        ><span>up to 45 pts</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between"
+                        class="text-sm"
+                    >
+                        <span class="text-soft">Assignment weight</span
+                        ><span>up to 30 pts</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between"
+                        class="text-sm"
+                    >
+                        <span class="text-soft">Estimated hours</span
+                        ><span>up to 10 pts</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between"
+                        class="text-sm"
+                    >
+                        <span class="text-soft">Difficulty</span
+                        ><span>5 / 10 / 15 pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Task Details</div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="django-form">
+                    {% csrf_token %} {{ form.as_p }}
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="margin-top: var(--s4)"
+                    >
+                        {% if editing %}Save changes{% else %}Add task{% endif
+                        %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,71 +1,122 @@
-{% extends "base.html" %}
-{% load dashboard_extras %}
-
-{% block page_intro %}
-<section class="page-intro reveal">
-    <div>
-        <p class="kicker">Grade Prediction</p>
-        <h2 class="page-title">Run what if scenarios.</h2>
-    </div>
-    <p class="page-description">Enter possible scores for upcoming tasks to estimate projected outcomes.</p>
-</section>
-{% endblock %}
-
-{% block content %}
-<section class="card reveal">
-    <div class="section-head">
-        <div>
-            <p class="label">Calculator</p>
-            <h3>Prediction Inputs</h3>
+{% extends "base.html" %} {% load dashboard_extras %} {% block title %}Grade
+Predictor — Study Atlas{% endblock %} {% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="page-title">Grade Predictor</div>
+        <div class="page-subtitle">
+            Enter hypothetical scores to project your final grade.
         </div>
-        <form method="get" class="inline-form">
-            {{ filter_form.as_p }}
-            <button type="submit" class="button">Filter</button>
+    </div>
+    <div class="page-actions">
+        <form
+            method="get"
+            style="display: flex; align-items: center; gap: var(--s2)"
+        >
+            {{ filter_form.course }}
+            <button type="submit" class="btn btn-secondary btn-sm">
+                Filter
+            </button>
         </form>
     </div>
+</div>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="list">
-            {% for task in open_tasks %}
-                <div class="row input-row">
-                    <div>
-                        <p class="row-title">{{ task.title }}</p>
-                        <p class="muted">{% if task.course %}{{ task.course.title }}{% else %}Independent task{% endif %} | Weight {{ task.weight_percent }}%</p>
-                    </div>
-                    <label class="input-label">
-                        <span>What if score %</span>
-                        <input type="number" name="task_{{ task.pk }}" min="0" max="100" step="0.01" value="{{ what_if_scores|get_item:task.pk|default:'' }}">
-                    </label>
-                </div>
-            {% empty %}
-                <p class="muted">No open tasks available for prediction.</p>
-            {% endfor %}
-        </div>
-        {% if open_tasks %}
-            <button type="submit" class="button">Recalculate</button>
-        {% endif %}
-    </form>
-</section>
-
-<section class="grid-two reveal">
-    <article class="card">
-        <p class="label">Overall</p>
-        <h3>Projected Grade</h3>
-        <p class="section-value">{{ projection.overall_predicted_percent }}%</p>
-    </article>
-
-    <article class="card">
-        <p class="label">Courses</p>
-        <h3>Per Course Forecast</h3>
-        {% for result in projection.courses %}
-            <div class="split-line">
-                <p>{{ result.course.title }}</p>
-                <p>{{ result.predicted_percent }}%</p>
+<div class="page-body">
+    <div class="split-panel reveal">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Projected Grade</div>
             </div>
-        {% empty %}
-            <p class="muted">No course data available yet.</p>
-        {% endfor %}
-    </article>
-</section>
+            <div
+                class="card-body"
+                style="text-align: center; padding: var(--s8)"
+            >
+                <div
+                    class="stat-value stat-accent"
+                    style="font-size: 56px; letter-spacing: -0.04em"
+                >
+                    {{ projection.overall_predicted_percent }}%
+                </div>
+                <div class="text-sm text-soft mt-2">
+                    weighted average across all courses
+                </div>
+            </div>
+            <hr class="card-divider" />
+            <div class="card-body">
+                <div class="grade-list">
+                    {% for result in projection.courses %}
+                    <div class="grade-row">
+                        <div class="grade-row-head">
+                            <div class="grade-course-name">
+                                {{ result.course.code }} — {{
+                                result.course.title }}
+                            </div>
+                            <div class="grade-pct">
+                                {{ result.predicted_percent }}%
+                            </div>
+                        </div>
+                        <div class="grade-bar-track">
+                            <div
+                                class="grade-bar-fill"
+                                style="width:{{ result.predicted_percent }}%;"
+                            ></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-soft text-sm">
+                        Sync an LMS connection to see projections.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">What-If Scores</div>
+                <span class="text-soft text-xs"
+                    >Enter a % score for each open task</span
+                >
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="whatif-table">
+                    {% for task in open_tasks %}
+                    <div class="whatif-row">
+                        <div class="whatif-task">
+                            <div class="whatif-task-name">{{ task.title }}</div>
+                            <div class="whatif-task-sub">
+                                {% if task.course %}{{ task.course.code }}{%
+                                else %}Independent{% endif %} · Weight {{
+                                task.weight_percent }}%
+                            </div>
+                        </div>
+                        <div class="whatif-input-wrap">
+                            <input
+                                type="number"
+                                name="task_{{ task.pk }}"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                placeholder="—"
+                                value="{{ what_if_scores|get_item:task.pk|default:'' }}"
+                                style="max-width: 90px; text-align: right"
+                            />
+                            <span class="whatif-unit">%</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="card-empty">No open tasks to predict.</div>
+                    {% endfor %}
+                </div>
+                {% if open_tasks %}
+                <div style="padding: var(--s4) var(--s5)">
+                    <button type="submit" class="btn btn-primary">
+                        Recalculate
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
