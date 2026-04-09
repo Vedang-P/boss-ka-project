@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from .exceptions import ProviderError
 from .forms import LMSConnectionForm
@@ -85,3 +86,34 @@ def manage_connections(request):
         "provider", "display_name"
     )
     return render(request, "integrations/manage.html", {"connections": connections})
+
+
+@login_required
+def connection_toggle_mode(request, pk):
+    """Flip a connection between demo and live mode, then re-sync."""
+    connection = get_object_or_404(LMSConnection, pk=pk, user=request.user)
+    if request.method == "POST":
+        new_mode = "live" if connection.mode == "demo" else "demo"
+        connection.mode = new_mode
+        connection.last_synced_at = None
+        connection.status_message = (
+            f"Switched to {connection.get_mode_display()} mode. Sync to refresh data."
+        )
+        connection.save(
+            update_fields=["mode", "last_synced_at", "status_message", "updated_at"]
+        )
+
+        # Auto-sync so the dashboard reflects the new mode immediately
+        try:
+            sync_connection(connection)
+            messages.success(
+                request,
+                f"{connection.display_name} switched to {connection.get_mode_display()} mode and synced.",
+            )
+        except ProviderError as exc:
+            messages.warning(
+                request,
+                f"{connection.display_name} switched to {connection.get_mode_display()} mode, "
+                f"but sync failed: {exc}",
+            )
+    return redirect("integrations:manage")

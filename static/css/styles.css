@@ -19,8 +19,17 @@
     --font-main: "Source Sans 3", sans-serif;
 
     --bg: #f3f6fb;
-    --bg-accent: radial-gradient(circle at 15% 12%, rgba(70, 126, 182, 0.14), transparent 34%),
-        radial-gradient(circle at 88% 2%, rgba(88, 167, 169, 0.14), transparent 28%);
+    --bg-accent:
+        radial-gradient(
+            circle at 15% 12%,
+            rgba(70, 126, 182, 0.14),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 88% 2%,
+            rgba(88, 167, 169, 0.14),
+            transparent 28%
+        );
     --surface: #ffffff;
     --surface-soft: #f8fbff;
     --surface-strong: #f1f6fd;
@@ -39,8 +48,17 @@
 
 html[data-theme="dark"] {
     --bg: #0c1420;
-    --bg-accent: radial-gradient(circle at 15% 12%, rgba(58, 99, 146, 0.24), transparent 34%),
-        radial-gradient(circle at 88% 2%, rgba(49, 130, 128, 0.2), transparent 28%);
+    --bg-accent:
+        radial-gradient(
+            circle at 15% 12%,
+            rgba(58, 99, 146, 0.24),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 88% 2%,
+            rgba(49, 130, 128, 0.2),
+            transparent 28%
+        );
     --surface: #121c2a;
     --surface-soft: #182536;
     --surface-strong: #1f2d40;
@@ -149,7 +167,10 @@ a:hover {
     font-size: 0.92rem;
     font-weight: 500;
     box-shadow: var(--shadow-1);
-    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+    transition:
+        transform 120ms ease,
+        background-color 120ms ease,
+        border-color 120ms ease;
 }
 
 .nav-link:hover {
@@ -181,7 +202,9 @@ a:hover {
     font-weight: 500;
     box-shadow: var(--shadow-1);
     cursor: pointer;
-    transition: transform 120ms ease, border-color 120ms ease;
+    transition:
+        transform 120ms ease,
+        border-color 120ms ease;
 }
 
 .theme-toggle:hover {
@@ -344,6 +367,18 @@ a:hover {
 }
 
 .status-done {
+    color: var(--good);
+    border-color: rgba(47, 132, 91, 0.45);
+    background: rgba(47, 132, 91, 0.12);
+}
+
+.mode-demo {
+    color: var(--warn);
+    border-color: rgba(187, 123, 46, 0.45);
+    background: rgba(187, 123, 46, 0.12);
+}
+
+.mode-live {
     color: var(--good);
     border-color: rgba(47, 132, 91, 0.45);
     background: rgba(47, 132, 91, 0.12);
@@ -613,7 +648,9 @@ textarea {
 .reveal {
     opacity: 0;
     transform: translateY(8px);
-    transition: opacity 220ms ease, transform 220ms ease;
+    transition:
+        opacity 220ms ease,
+        transform 220ms ease;
 }
 
 .reveal.is-visible {

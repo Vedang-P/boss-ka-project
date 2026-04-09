@@ -5,7 +5,7 @@
     <div>
         <p class="kicker">LMS Integrations</p>
         <h2 class="page-title">Manage your connections.</h2>
-        <p class="page-description">Sync, review status, or remove each platform connection.</p>
+        <p class="page-description">Sync, switch between demo and live mode, or remove each platform connection.</p>
     </div>
     <div class="hero-actions">
         <a class="button" href="{% url 'integrations:connection_create' %}">Add connection</a>
@@ -30,21 +30,30 @@
                     <div>
                         <div class="row-head">
                             <p class="row-title">{{ connection.display_name }}</p>
+                            <span class="status-pill {% if connection.mode == 'demo' %}mode-demo{% else %}mode-live{% endif %}">
+                                {{ connection.get_mode_display }}
+                            </span>
                             <span class="status-pill {% if connection.is_active %}status-open{% else %}status-done{% endif %}">
                                 {% if connection.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </div>
-                        <p class="muted">{{ connection.get_provider_display }} | {{ connection.get_mode_display }} | {{ connection.get_auth_type_display }}</p>
+                        <p class="muted">{{ connection.get_provider_display }} &middot; {{ connection.get_auth_type_display }}</p>
                         <p class="muted">{{ connection.status_message|default:"Ready to sync." }}</p>
-                        <p class="muted">Last sync: {{ connection.last_synced_at|default:"Never" }}</p>
+                        <p class="muted">Last sync: {{ connection.last_synced_at|date:"d M Y H:i"|default:"Never" }}</p>
                         {% with last_log=connection.sync_logs.first %}
                             {% if last_log %}
-                                <p class="muted">Last result: {{ last_log.get_status_display }} — {{ last_log.items_imported }} items imported</p>
+                                <p class="muted">Last result: {{ last_log.get_status_display }} &mdash; {{ last_log.items_imported }} item(s) imported</p>
                             {% endif %}
                         {% endwith %}
                     </div>
                     <div class="row-meta">
                         <a class="button" href="{% url 'integrations:connection_sync' connection.pk %}">Sync</a>
+                        <form method="post" action="{% url 'integrations:connection_toggle_mode' connection.pk %}" style="display:contents;">
+                            {% csrf_token %}
+                            <button type="submit" class="button button-soft">
+                                {% if connection.mode == 'demo' %}Switch to Live{% else %}Switch to Demo{% endif %}
+                            </button>
+                        </form>
                         <a class="button button-soft" href="{% url 'integrations:connection_delete' connection.pk %}" style="border-color:var(--bad);color:var(--bad);">Delete</a>
                     </div>
                 </div>
