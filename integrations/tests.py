@@ -13,6 +13,15 @@ from .services import sync_connection
 
 
 class IntegrationSyncTests(TestCase):
+    def test_connection_create_page_renders(self):
+        user = User.objects.create_user(username="connector", password="pass12345")
+        self.client.login(username="connector", password="pass12345")
+
+        response = self.client.get(reverse("integrations:connection_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Add LMS Connection")
+
     def test_demo_canvas_sync_imports_fixture_data(self):
         user = User.objects.create_user(username="student", password="pass12345")
         connection = LMSConnection.objects.create(

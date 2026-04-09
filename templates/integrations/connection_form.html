@@ -1,5 +1,6 @@
-{% extends "base.html" %} {% block title %}Add Connection — Study Atlas{%
-endblock %} {% block content %}
+{% extends "base.html" %}
+{% block title %}Add Connection — Study Atlas{% endblock %}
+{% block content %}
 <div class="page-header">
     <div class="page-header-left">
         <div class="page-title">Add LMS Connection</div>
@@ -71,7 +72,8 @@ endblock %} {% block content %}
             </div>
             <div class="card-body">
                 <form method="post" class="django-form">
-                    {% csrf_token %} {{ form.as_p }}
+                    {% csrf_token %}
+                    {{ form.as_p }}
                     <button
                         type="submit"
                         class="btn btn-primary"
