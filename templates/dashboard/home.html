@@ -100,16 +100,24 @@
                 >
             </div>
             <div class="card-body">
-                <div class="progress-row" style="margin-bottom: var(--s4)">
+                <div class="completion-hero">
+                    <div class="completion-value">{{ completion_percent }}%</div>
+                    <div class="completion-caption">
+                        {{ completed_tasks }} tasks complete · {{ total_tasks }} total tracked
+                    </div>
+                </div>
+                <div class="progress-row">
                     <div class="progress-bar-track">
                         <div
                             class="progress-bar-fill"
                             style="width:{{ completion_percent }}%;"
                         ></div>
                     </div>
-                    <div class="progress-label">{{ completion_percent }}%</div>
                 </div>
-                <!-- Grade per course -->
+            </div>
+            <hr class="card-divider" />
+            <div class="card-body">
+                <div class="section-kicker">Course outlook</div>
                 <div class="grade-list">
                     {% for course_result in grade_projection.courses %}
                     <div class="grade-row">

@@ -137,8 +137,8 @@ body {
 
 body {
     font-family: var(--font);
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.55;
     color: var(--text-0);
     background: var(--bg-0);
     -webkit-font-smoothing: antialiased;
@@ -232,14 +232,14 @@ svg {
 }
 
 .brand-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-0);
     letter-spacing: -0.01em;
 }
 
 .brand-kicker {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     color: var(--text-2);
     text-transform: uppercase;
@@ -270,7 +270,7 @@ svg {
 
 .sidebar-group-label {
     padding: 0 var(--s4) var(--s1);
-    font-size: 10.5px;
+    font-size: 11.5px;
     font-weight: 600;
     color: var(--text-2);
     text-transform: uppercase;
@@ -285,7 +285,7 @@ svg {
     margin: 1px var(--s2);
     border-radius: var(--r-md);
     color: var(--text-1);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     border: none;
     background: transparent;
@@ -397,7 +397,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .page-title {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--text-0);
     letter-spacing: -0.01em;
@@ -405,7 +405,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .page-subtitle {
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--text-1);
 }
 
@@ -450,7 +450,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
     border: 1px solid var(--border-strong);
     background: var(--bg-2);
     box-shadow: var(--shadow-lg);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-0);
     pointer-events: all;
@@ -540,7 +540,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .card-title {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-0);
     display: flex;
@@ -549,7 +549,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .card-title-count {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-2);
     background: var(--bg-3);
@@ -559,7 +559,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .card-action {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-1);
     text-decoration: none;
@@ -585,7 +585,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
     padding: var(--s10) var(--s5);
     text-align: center;
     color: var(--text-2);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .card-divider {
@@ -633,7 +633,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .stat-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -641,7 +641,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .stat-value {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-0);
     letter-spacing: -0.03em;
@@ -650,7 +650,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
 }
 
 .stat-sub {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-1);
 }
 
@@ -705,7 +705,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
     box-shadow: none;
     color: var(--text-0);
     font-family: var(--font);
-    font-size: 12.5px;
+    font-size: 14px;
     width: 100%;
     outline: none;
     padding: 0;
@@ -730,7 +730,7 @@ html[data-theme="dark"] .sidebar-item.is-active {
     border-radius: var(--r-pill);
     background: transparent;
     color: var(--text-1);
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 500;
     padding: 3px 9px;
     cursor: pointer;
@@ -812,7 +812,7 @@ html[data-theme="dark"] .chip.is-active {
 }
 
 .issue-title {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     color: var(--text-0);
     white-space: nowrap;
@@ -837,7 +837,7 @@ html[data-theme="dark"] .chip.is-active {
 }
 
 .issue-due {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-2);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -855,7 +855,7 @@ html[data-theme="dark"] .chip.is-active {
 }
 
 .issue-score {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-2);
     font-variant-numeric: tabular-nums;
     min-width: 44px;
@@ -879,7 +879,7 @@ html[data-theme="dark"] .chip.is-active {
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 10.5px;
+    font-size: 11.5px;
     font-weight: 500;
     padding: 2px 7px;
     border-radius: 4px;
@@ -982,7 +982,7 @@ html[data-theme="dark"] .badge-blackboard {
     justify-content: center;
     gap: var(--s2);
     font-family: var(--font);
-    font-size: 12.5px;
+    font-size: 13.5px;
     font-weight: 500;
     padding: 6px 12px;
     border-radius: var(--r-md);
@@ -1047,7 +1047,7 @@ html[data-theme="dark"] .badge-blackboard {
 }
 
 .btn-sm {
-    font-size: 11.5px;
+    font-size: 12.5px;
     padding: 4px 9px;
     border-radius: var(--r-sm);
 }
@@ -1060,7 +1060,7 @@ html[data-theme="dark"] .badge-blackboard {
 }
 
 .btn-xs {
-    font-size: 11px;
+    font-size: 12px;
     padding: 2px 7px;
     border-radius: var(--r-sm);
 }
@@ -1088,20 +1088,20 @@ html[data-theme="dark"] .badge-blackboard {
 }
 
 .form-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-0);
     letter-spacing: 0.01em;
 }
 
 .form-hint {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-2);
     line-height: 1.5;
 }
 
 .form-error {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--bad);
 }
 
@@ -1173,7 +1173,7 @@ textarea {
 }
 
 .django-form p label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-0);
 }
@@ -1190,7 +1190,7 @@ textarea {
 }
 
 .django-form ul.errorlist li {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--bad);
 }
 
@@ -1212,7 +1212,7 @@ textarea {
 
 .heatmap-day-label {
     text-align: center;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-2);
     text-transform: uppercase;
@@ -1269,7 +1269,7 @@ textarea {
     border: 1px solid var(--border-strong);
     border-radius: var(--r-sm);
     padding: 4px 8px;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-0);
     white-space: nowrap;
     box-shadow: var(--shadow-md);
@@ -1300,7 +1300,7 @@ textarea {
 }
 
 .grade-course-name {
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-0);
     line-height: 1.4;
@@ -1314,7 +1314,7 @@ textarea {
 }
 
 .grade-pct {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-1);
     font-variant-numeric: tabular-nums;
@@ -1324,7 +1324,7 @@ textarea {
 }
 
 .grade-bar-track {
-    height: 6px;
+    height: 7px;
     border-radius: var(--r-pill);
     background: var(--bg-3);
     overflow: hidden;
@@ -1365,7 +1365,7 @@ textarea {
 }
 
 .timeline-time {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-2);
     text-align: right;
@@ -1402,7 +1402,7 @@ textarea {
 }
 
 .timeline-title {
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-0);
     white-space: nowrap;
@@ -1411,7 +1411,7 @@ textarea {
 }
 
 .timeline-sub {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-2);
     margin-top: 2px;
 }
@@ -1451,7 +1451,7 @@ textarea {
 }
 
 .conn-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-0);
     display: flex;
@@ -1505,13 +1505,13 @@ textarea {
 }
 
 .entity-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-0);
 }
 
 .entity-meta {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-1);
 }
 
@@ -1540,7 +1540,7 @@ textarea {
 
 .progress-bar-track {
     flex: 1;
-    height: 6px;
+    height: 8px;
     border-radius: var(--r-pill);
     background: var(--bg-3);
     overflow: hidden;
@@ -1554,7 +1554,7 @@ textarea {
 }
 
 .progress-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-0);
     font-variant-numeric: tabular-nums;
@@ -1655,7 +1655,7 @@ textarea {
 }
 
 .whatif-task-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-0);
     white-space: nowrap;
@@ -1664,7 +1664,7 @@ textarea {
 }
 
 .whatif-task-sub {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-2);
     margin-top: 2px;
 }
@@ -1682,7 +1682,7 @@ textarea {
 }
 
 .whatif-unit {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-2);
 }
 
@@ -1713,13 +1713,13 @@ textarea {
 }
 
 .slot-day {
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-0);
 }
 
 .slot-time {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-1);
     font-variant-numeric: tabular-nums;
 }
@@ -1814,10 +1814,47 @@ textarea {
 }
 
 .auth-sub {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-1);
     margin-bottom: var(--s6);
     line-height: 1.5;
+}
+
+.text-xs {
+    font-size: 12px;
+}
+
+.text-sm {
+    font-size: 13px;
+}
+
+.completion-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+    margin-bottom: var(--s4);
+}
+
+.completion-value {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--text-0);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.completion-caption {
+    font-size: 13px;
+    color: var(--text-1);
+}
+
+.section-kicker {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: var(--s3);
 }
 
 .auth-footer {
@@ -1856,7 +1893,7 @@ textarea {
 }
 
 .settings-hint {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-2);
     margin-top: 2px;
 }
@@ -1885,10 +1922,10 @@ textarea {
 }
 
 .text-sm {
-    font-size: 12px;
+    font-size: 13px;
 }
 .text-xs {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .font-mono {
