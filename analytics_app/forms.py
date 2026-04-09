@@ -10,3 +10,4 @@ class GradePredictionFilterForm(forms.Form):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
         self.fields["course"].queryset = user.courses.order_by("title")
+        self.fields["course"].empty_label = "All courses"

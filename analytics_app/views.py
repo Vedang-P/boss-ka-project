@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -20,8 +20,12 @@ def grade_prediction_view(request):
     if request.method == "POST":
         for key, value in request.POST.items():
             if key.startswith("task_") and value:
-                task_id = int(key.split("_", 1)[1])
-                what_if_scores[task_id] = Decimal(value)
+                try:
+                    task_id = int(key.split("_", 1)[1])
+                    parsed = Decimal(value)
+                except (ValueError, InvalidOperation):
+                    continue
+                what_if_scores[task_id] = min(Decimal("100"), max(Decimal("0"), parsed))
 
     projection = overall_grade_projection(
         request.user,

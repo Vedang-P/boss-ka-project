@@ -13,6 +13,12 @@ from .services import generate_study_sessions
 
 
 class PlannerServiceTests(TestCase):
+    def test_availability_form_defaults_weekday_to_monday(self):
+        form = StudyAvailabilityForm()
+
+        self.assertEqual(form.fields["weekday"].initial, 0)
+        self.assertEqual(list(form.fields["weekday"].choices)[0], (0, "Monday"))
+
     def test_generate_study_sessions_uses_availability_slots(self):
         user = User.objects.create_user(username="planner", password="pass12345")
         course = Course.objects.create(user=user, code="CS102", title="Data Structures")

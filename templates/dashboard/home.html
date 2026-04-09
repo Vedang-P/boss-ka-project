@@ -113,10 +113,9 @@
                 <div class="grade-list">
                     {% for course_result in grade_projection.courses %}
                     <div class="grade-row">
-                        <div class="grade-row-head">
+                            <div class="grade-row-head">
                             <div class="grade-course-name">
-                                {{ course_result.course.code }} — {{
-                                course_result.course.title }}
+                                {{ course_result.course.code }} — {{ course_result.course.title }}
                             </div>
                             <div class="grade-pct">
                                 {{ course_result.predicted_percent }}%
@@ -141,10 +140,9 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-title">Workload · 14 days</div>
-                {% if workload.high_days %}<span class="badge badge-red"
-                    >{{ workload.high_days|length }} heavy day{{
-                    workload.high_days|length|pluralize }}</span
-                >{% endif %}
+                {% if workload.high_days %}
+                <span class="badge badge-red">{{ workload.high_days|length }} heavy day{{ workload.high_days|length|pluralize }}</span>
+                {% endif %}
             </div>
             <div class="card-body">
                 <div class="heatmap-wrap">
@@ -163,10 +161,7 @@
                             class="heatmap-cell {% if day.level == 'high' %}l3{% elif day.level == 'medium' %}l2{% elif day.hours > 0 %}l1{% endif %}"
                             data-tip="{{ day.date|date:'d M' }}: {{ day.hours }}h"
                         >
-                            <span class="heatmap-tooltip"
-                                >{{ day.date|date:"d M" }} · {{ day.hours
-                                }}h</span
-                            >
+                            <span class="heatmap-tooltip">{{ day.date|date:"d M" }} · {{ day.hours }}h</span>
                         </div>
                         {% endfor %}
                     </div>
@@ -363,10 +358,7 @@
                                     class="badge {% if connection.provider == 'canvas' %}badge-canvas{% else %}badge-blackboard{% endif %}"
                                     >{{ connection.get_provider_display }}</span
                                 >
-                                <span class="text-xs text-soft"
-                                    >{{ connection.last_synced_at|date:"d M
-                                    H:i"|default:"Never synced" }}</span
-                                >
+                                <span class="text-xs text-soft">{{ connection.last_synced_at|date:"d M H:i"|default:"Never synced" }}</span>
                             </div>
                         </div>
                         <div class="conn-actions">
@@ -425,10 +417,7 @@
                                 <div class="timeline-title">
                                     {{ session.title }}
                                 </div>
-                                <div class="timeline-sub">
-                                    {{ session.start_at|date:"d M" }} · {{
-                                    session.end_at|date:"H:i" }}
-                                </div>
+                                <div class="timeline-sub">{{ session.start_at|date:"d M" }} · {{ session.end_at|date:"H:i" }}</div>
                             </div>
                         </div>
                         {% endfor %}

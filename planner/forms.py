@@ -4,6 +4,13 @@ from .models import StudyAvailability
 
 
 class StudyAvailabilityForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["weekday"].choices = StudyAvailability.WEEKDAY_CHOICES
+        self.fields["weekday"].initial = 0
+        self.fields["start_time"].widget.attrs.update({"step": 900})
+        self.fields["end_time"].widget.attrs.update({"step": 900})
+
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get("start_time")

@@ -6,9 +6,15 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import Course, Task
+from .forms import ManualTaskForm
 
 
 class ManualTaskViewTests(TestCase):
+    def test_manual_task_form_uses_readable_course_empty_label(self):
+        form = ManualTaskForm()
+
+        self.assertEqual(form.fields["course"].empty_label, "No linked course")
+
     def test_manual_task_form_page_renders(self):
         user = User.objects.create_user(username="manualpage", password="pass12345")
         self.client.login(username="manualpage", password="pass12345")

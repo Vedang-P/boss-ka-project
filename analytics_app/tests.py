@@ -84,3 +84,21 @@ class AnalyticsServiceTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "75.00%")
+
+    def test_grade_prediction_view_does_not_render_broken_template_tokens(self):
+        Task.objects.create(
+            user=self.user,
+            course=self.course,
+            title="Rendering Quiz",
+            due_at=timezone.now() + timezone.timedelta(days=1),
+            weight_percent=Decimal("10"),
+            difficulty="medium",
+            estimated_hours=Decimal("1"),
+        )
+        self.client.login(username="student", password="pass12345")
+
+        response = self.client.get(reverse("analytics_app:grade_prediction"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "{{ result.course.title }}", html=False)
+        self.assertNotContains(response, "{{ task.weight_percent }}", html=False)

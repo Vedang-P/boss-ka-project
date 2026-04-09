@@ -1,5 +1,7 @@
-{% extends "base.html" %} {% load dashboard_extras %} {% block title %}Grade
-Predictor — Study Atlas{% endblock %} {% block content %}
+{% extends "base.html" %}
+{% load dashboard_extras %}
+{% block title %}Grade Predictor — Study Atlas{% endblock %}
+{% block content %}
 <div class="page-header">
     <div class="page-header-left">
         <div class="page-title">Grade Predictor</div>
@@ -45,10 +47,9 @@ Predictor — Study Atlas{% endblock %} {% block content %}
                 <div class="grade-list">
                     {% for result in projection.courses %}
                     <div class="grade-row">
-                        <div class="grade-row-head">
+                            <div class="grade-row-head">
                             <div class="grade-course-name">
-                                {{ result.course.code }} — {{
-                                result.course.title }}
+                                {{ result.course.code }} — {{ result.course.title }}
                             </div>
                             <div class="grade-pct">
                                 {{ result.predicted_percent }}%
@@ -84,22 +85,19 @@ Predictor — Study Atlas{% endblock %} {% block content %}
                     <div class="whatif-row">
                         <div class="whatif-task">
                             <div class="whatif-task-name">{{ task.title }}</div>
-                            <div class="whatif-task-sub">
-                                {% if task.course %}{{ task.course.code }}{%
-                                else %}Independent{% endif %} · Weight {{
-                                task.weight_percent }}%
-                            </div>
+                            <div class="whatif-task-sub">{% if task.course %}{{ task.course.code }}{% else %}Independent{% endif %} · Weight {{ task.weight_percent }}%</div>
                         </div>
                         <div class="whatif-input-wrap">
                             <input
                                 type="number"
                                 name="task_{{ task.pk }}"
+                                inputmode="decimal"
                                 min="0"
                                 max="100"
                                 step="0.01"
-                                placeholder="—"
+                                placeholder="0-100"
                                 value="{{ what_if_scores|get_item:task.pk|default:'' }}"
-                                style="max-width: 90px; text-align: right"
+                                class="score-input input-no-spin"
                             />
                             <span class="whatif-unit">%</span>
                         </div>

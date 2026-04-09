@@ -26,6 +26,8 @@ class DashboardViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Mini Project Checkpoint")
+        self.assertNotContains(response, "{{ workload.high_days|length|pluralize }}", html=False)
+        self.assertNotContains(response, "{{ session.end_at|date:\"H:i\" }}", html=False)
 
     def test_dashboard_requires_authentication(self):
         response = self.client.get(reverse("dashboard:home"))
