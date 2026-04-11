@@ -1,3 +1,4 @@
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 
 from django.contrib.auth.models import User
@@ -15,11 +16,8 @@ SHOWCASE_PASSWORD = "StudyAtlas@123"
 
 
 def _at_local_time(days_ahead, hour, minute=0):
-    target_date = timezone.localdate() + timezone.timedelta(days=days_ahead)
-    naive = timezone.datetime.combine(target_date, timezone.datetime.min.time()).replace(
-        hour=hour,
-        minute=minute,
-    )
+    target_date = timezone.localdate() + timedelta(days=days_ahead)
+    naive = datetime.combine(target_date, time(hour=hour, minute=minute))
     return timezone.make_aware(naive, timezone.get_current_timezone())
 
 
@@ -172,8 +170,8 @@ def seed_showcase_user():
         StudyAvailability.objects.create(
             user=user,
             weekday=weekday,
-            start_time=timezone.datetime.min.time().replace(hour=start_hour, minute=start_minute),
-            end_time=timezone.datetime.min.time().replace(hour=end_hour, minute=end_minute),
+            start_time=time(hour=start_hour, minute=start_minute),
+            end_time=time(hour=end_hour, minute=end_minute),
         )
 
     generate_study_sessions(user)
