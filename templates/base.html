@@ -13,7 +13,6 @@
 <body>
 
 {% if user.is_authenticated %}
-
     <!-- Sidebar overlay (mobile) -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
@@ -111,36 +110,20 @@
             </div>
         </div>
     </header>
-
-    <!-- Main content -->
-    <main class="page-shell" id="main-content">
-        {% if messages %}
-        <div class="messages-container">
-            {% for message in messages %}
-            <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% block content %}{% endblock %}
-    </main>
-
-{% else %}
-
-    <!-- Unauthenticated — centered auth layout -->
-    <main class="auth-shell">
-        {% if messages %}
-        <div class="messages-container" style="position:fixed;top:1.5rem;right:1.5rem;width:320px;z-index:200;">
-            {% for message in messages %}
-            <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% block content %}{% endblock %}
-    </main>
-
 {% endif %}
+
+<!-- Single content block — layout class switches based on auth state -->
+<main class="{% if user.is_authenticated %}page-shell{% else %}auth-shell{% endif %}" id="main-content">
+    {% if messages %}
+    <div class="messages-container{% if not user.is_authenticated %} messages-container--fixed{% endif %}">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
 
 <script src="{% static 'js/main.js' %}" defer></script>
 {% block extra_js %}{% endblock %}

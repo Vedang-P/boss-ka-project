@@ -857,6 +857,15 @@ textarea {
     margin-bottom: var(--space-6);
 }
 
+.messages-container--fixed {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 320px;
+    z-index: 200;
+    margin-bottom: 0;
+}
+
 .message {
     display: flex;
     align-items: center;
