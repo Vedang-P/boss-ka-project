@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from django.utils import timezone
@@ -29,7 +30,7 @@ def generate_study_sessions(user, horizon_days=14):
     current_date = timezone.localdate()
     slot_cursor = {}
     for offset in range(horizon_days):
-        target_date = current_date + timezone.timedelta(days=offset)
+        target_date = current_date + timedelta(days=offset)
         weekday_slots = [slot for slot in availabilities if slot.weekday == target_date.weekday()]
         for slot in weekday_slots:
             slot_cursor.setdefault(target_date, []).append(
@@ -50,8 +51,8 @@ def generate_study_sessions(user, horizon_days=14):
             for slot in slots:
                 if remaining_hours <= 0:
                     break
-                start_at = timezone.make_aware(timezone.datetime.combine(day, slot["start_time"]))
-                end_limit = timezone.make_aware(timezone.datetime.combine(day, slot["end_time"]))
+                start_at = timezone.make_aware(datetime.combine(day, slot["start_time"]))
+                end_limit = timezone.make_aware(datetime.combine(day, slot["end_time"]))
                 existing_sessions = StudySession.objects.filter(user=user, start_at__date=day)
                 occupied_hours = sum(
                     (
@@ -64,7 +65,7 @@ def generate_study_sessions(user, horizon_days=14):
                     continue
 
                 block_hours = min(Decimal("1"), remaining_hours)
-                end_at = start_at + timezone.timedelta(hours=float(block_hours))
+                end_at = start_at + timedelta(hours=float(block_hours))
                 if end_at > end_limit:
                     continue
 

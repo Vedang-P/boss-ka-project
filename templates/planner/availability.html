@@ -1,60 +1,50 @@
 {% extends "base.html" %}
-{% block title %}Availability - Study Atlas{% endblock %}
+{% block title %}Availability{% endblock %}
+{% block page_title %}Availability{% endblock %}
+{% block nav_planner %}active{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <div class="page-header-left">
-        <div class="page-title">Study Availability</div>
-        <div class="page-subtitle">
-            The planner uses these weekly slots to place study sessions before important deadlines.
-        </div>
-    </div>
+
+<div class="section-intro">
+    <p class="eyebrow">Planner</p>
+    <h1>Weekly Availability</h1>
+    <p>Define your recurring free slots so the planner can schedule sessions before deadlines.</p>
 </div>
 
-<div class="page-body">
-    <div class="split-panel reveal">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Add availability slot</div>
-            </div>
-            <div class="card-body">
-                <form method="post" class="django-form">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary" style="margin-top: var(--s4)">Save slot</button>
-                </form>
-            </div>
-        </div>
+<div class="grid-2">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Saved weekly windows</div>
-                <span class="card-title-count">{{ slots|length }}</span>
+    <article class="panel fade-up">
+        <div class="panel-header">
+            <h2 class="panel-title">Add Slot</h2>
+        </div>
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Slot</button>
             </div>
-            <div class="card-body">
-                {% if slots %}
-                <div class="stack-list">
-                    {% for slot in slots %}
-                    <div class="entity-row">
-                        <div class="entity-main">
-                            <div class="entity-title">{{ slot.get_weekday_display }}</div>
-                            <div class="entity-meta">
-                                {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
-                            </div>
-                        </div>
-                        <form method="post" action="{% url 'planner:slot_delete' slot.pk %}" class="inline-form">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove this slot?');">
-                                Remove
-                            </button>
-                        </form>
-                    </div>
-                    {% endfor %}
+        </form>
+    </article>
+
+    <article class="panel fade-up">
+        <div class="panel-header">
+            <h2 class="panel-title">Saved Slots</h2>
+            <a href="{% url 'planner:generate' %}" class="btn btn--ghost btn--sm">Generate sessions</a>
+        </div>
+        {% if slots %}
+            {% for slot in slots %}
+            <div class="data-row">
+                <div class="data-row-left">
+                    <p class="data-row-title">{{ slot.get_weekday_display }}</p>
+                    <p class="data-row-sub">{{ slot.start_time }} &mdash; {{ slot.end_time }}</p>
                 </div>
-                {% else %}
-                <div class="card-empty">No availability slots saved yet.</div>
-                {% endif %}
             </div>
-        </div>
-    </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No availability saved yet. Add slots on the left.</p>
+        {% endif %}
+    </article>
+
 </div>
+
 {% endblock %}

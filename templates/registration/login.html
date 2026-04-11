@@ -1,29 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Login - Study Atlas{% endblock %}
+{% block title %}Sign In{% endblock %}
+
 {% block content %}
-<div class="auth-shell">
-    <div class="auth-card">
-        <div class="auth-logo">
-            <div class="brand-mark">S</div>
-            <div class="brand-name">Study Atlas</div>
-        </div>
-        <div class="auth-heading">Welcome back</div>
-        <div class="auth-sub">
-            Log in to see your deadlines, priorities, and study plan.
-        </div>
-        <form method="post" class="django-form">
-            {% csrf_token %} {{ form.as_p }}
-            <button
-                type="submit"
-                class="btn btn-primary w-full"
-                style="margin-top: var(--s4)"
-            >
-                Log in
-            </button>
-        </form>
-        <div class="auth-footer">
-            No account? <a href="{% url 'accounts:signup' %}">Create one</a>
-        </div>
+<div class="auth-card panel" style="width: 100%; max-width: 420px;">
+
+    <div style="text-align: center; margin-bottom: var(--space-8);">
+        <p class="eyebrow">Academic Aggregator</p>
+        <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); color: var(--text-primary); letter-spacing: 0.04em; margin-top: var(--space-2); line-height: 1;">
+            Sign In
+        </h1>
+        <p style="color: var(--text-muted); font-size: var(--text-sm); margin-top: var(--space-2);">
+            Access your command center.
+        </p>
     </div>
+
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn--primary btn--full" style="margin-top: var(--space-4);">
+            Sign In
+        </button>
+    </form>
+
+    <p style="text-align: center; font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-6);">
+        No account? <a href="{% url 'accounts:signup' %}">Create one</a>
+    </p>
+
 </div>
 {% endblock %}

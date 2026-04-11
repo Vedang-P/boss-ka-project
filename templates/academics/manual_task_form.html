@@ -1,92 +1,27 @@
 {% extends "base.html" %}
-{% block title %}{% if editing %}Edit Task{% else %}Add Task{% endif %} — Study Atlas{% endblock %}
-{% block content %}
-<div class="page-header">
-    <div class="page-header-left">
-        <div class="page-title">
-            {% if editing %}Edit Task{% else %}Add Manual Task{% endif %}
-        </div>
-        <div class="page-subtitle">
-            Manual tasks are scored, workload-balanced, and included in study
-            plan generation.
-        </div>
-    </div>
-    <div class="page-actions">
-        <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:home' %}"
-            >← Dashboard</a
-        >
-        {% if editing and task %}<a
-            class="btn btn-danger btn-sm"
-            href="{% url 'academics:task_delete' task.pk %}"
-            >Delete</a
-        >{% endif %}
-    </div>
-</div>
+{% block title %}Add Task{% endblock %}
+{% block page_title %}Add Task{% endblock %}
+{% block nav_tasks %}active{% endblock %}
 
-<div class="page-body">
-    <div class="task-form-layout reveal">
-        <div class="task-form-aside">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">Urgency Preview</div>
-                </div>
-                <div class="card-body" style="text-align: center">
-                    <div
-                        class="stat-value"
-                        data-urgency-preview
-                        style="font-size: 48px"
-                    >
-                        —
-                    </div>
-                    <div class="text-xs text-soft mt-2">out of 100</div>
-                    <div style="margin-top: var(--s3)">
-                        <div class="grade-bar-track">
-                            <div
-                                class="grade-bar-fill urgency-bar-fill"
-                                style="width: 0%; animation: none"
-                            ></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">Scoring Guide</div>
-                </div>
-                <div class="card-body scoring-guide">
-                    <div class="scoring-guide-row text-sm">
-                        <span class="text-soft">Due date proximity</span><span>up to 45 pts</span>
-                    </div>
-                    <div class="scoring-guide-row text-sm">
-                        <span class="text-soft">Assignment weight</span><span>up to 30 pts</span>
-                    </div>
-                    <div class="scoring-guide-row text-sm">
-                        <span class="text-soft">Estimated hours</span><span>up to 10 pts</span>
-                    </div>
-                    <div class="scoring-guide-row text-sm">
-                        <span class="text-soft">Difficulty</span><span>5 / 10 / 15 pts</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card task-form-card">
-            <div class="card-header">
-                <div class="card-title">Task Details</div>
-            </div>
-            <div class="card-body">
-                <form method="post" class="django-form">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        style="margin-top: var(--s4)"
-                    >
-                        {% if editing %}Save changes{% else %}Add task{% endif %}
-                    </button>
-                </form>
-            </div>
-        </div>
+{% block content %}
+<div style="max-width: 640px;">
+
+    <div class="section-intro">
+        <p class="eyebrow">Academics</p>
+        <h1>Add Manual Task</h1>
+        <p>Track assignments, exams, or projects not imported from an LMS.</p>
     </div>
+
+    <article class="panel fade-up">
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Task</button>
+                <a href="{% url 'dashboard:home' %}" class="btn btn--ghost">Cancel</a>
+            </div>
+        </form>
+    </article>
+
 </div>
 {% endblock %}
