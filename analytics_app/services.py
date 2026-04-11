@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from django.utils import timezone
@@ -34,12 +35,12 @@ def calculate_urgency_score(task):
 
 def build_workload_summary(user, horizon_days=14):
     now = timezone.now()
-    end = now + timezone.timedelta(days=horizon_days)
+    end = now + timedelta(days=horizon_days)
     tasks = list(user.tasks.filter(is_completed=False, due_at__range=(now, end)).select_related("course"))
 
     by_day = []
     for offset in range(horizon_days):
-        day = now.date() + timezone.timedelta(days=offset)
+        day = now.date() + timedelta(days=offset)
         day_tasks = [task for task in tasks if task.due_at.date() == day]
         total_hours = sum((task.resolved_estimated_hours for task in day_tasks), Decimal("0"))
         total_weight = sum((Decimal(task.weight_percent or 0) for task in day_tasks), Decimal("0"))

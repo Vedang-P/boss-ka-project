@@ -1,13 +1,27 @@
 {% extends "base.html" %}
+{% block title %}Add Task{% endblock %}
+{% block page_title %}Add Task{% endblock %}
+{% block nav_tasks %}active{% endblock %}
 
 {% block content %}
-<section class="panel form-panel">
-    <h2>Add Manual Task</h2>
-    <p>Track work that is not imported from an LMS.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add task</button>
-    </form>
-</section>
+<div style="max-width: 640px;">
+
+    <div class="section-intro">
+        <p class="eyebrow">Academics</p>
+        <h1>Add Manual Task</h1>
+        <p>Track assignments, exams, or projects not imported from an LMS.</p>
+    </div>
+
+    <article class="panel fade-up">
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Task</button>
+                <a href="{% url 'dashboard:home' %}" class="btn btn--ghost">Cancel</a>
+            </div>
+        </form>
+    </article>
+
+</div>
 {% endblock %}

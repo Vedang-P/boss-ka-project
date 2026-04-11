@@ -1,46 +1,148 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Aggregator</title>
-    {% load static %}
+    <title>{% block title %}Dashboard{% endblock %} — Academic Aggregator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header class="site-header">
-        <div>
-            <p class="eyebrow">Academic Deadline & Assignment Aggregator</p>
-            <h1><a href="{% url 'dashboard:home' %}">Student Command Center</a></h1>
+
+{% if user.is_authenticated %}
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <p class="logo-eyebrow">Academic</p>
+            <p class="logo-title">Command<br>Center</p>
         </div>
-        <nav class="site-nav">
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard:home' %}">Dashboard</a>
-                <a href="{% url 'integrations:connection_create' %}">Connect LMS</a>
-                <a href="{% url 'academics:manual_task_create' %}">Add Task</a>
-                <a href="{% url 'planner:availability' %}">Availability</a>
-                <a href="{% url 'analytics_app:grade_prediction' %}">Grade Prediction</a>
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="link-button">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'accounts:signup' %}">Sign Up</a>
-            {% endif %}
+
+        <nav class="sidebar-nav" aria-label="Main navigation">
+            <p class="nav-section-label">Overview</p>
+
+            <a href="{% url 'dashboard:home' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <p class="nav-section-label">Academic</p>
+
+            <a href="{% url 'integrations:connection_create' %}" class="nav-item {% block nav_integrations %}{% endblock %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                Connect LMS
+            </a>
+
+            <a href="{% url 'academics:manual_task_create' %}" class="nav-item {% block nav_tasks %}{% endblock %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Add Task
+            </a>
+
+            <a href="{% url 'planner:availability' %}" class="nav-item {% block nav_planner %}{% endblock %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Availability
+            </a>
+
+            <a href="{% url 'analytics_app:grade_prediction' %}" class="nav-item {% block nav_analytics %}{% endblock %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6"  y1="20" x2="6"  y2="14"/>
+                    <line x1="2"  y1="20" x2="22" y2="20"/>
+                </svg>
+                Grade Prediction
+            </a>
         </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info-mini">
+                <div class="user-avatar-sm">{{ user.username|first|upper }}</div>
+                <span class="user-name-mini">{{ user.username }}</span>
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <span class="page-title">{% block page_title %}Dashboard{% endblock %}</span>
+        </div>
+        <div class="topbar-right">
+            <div class="user-chip">
+                <div class="user-avatar">{{ user.username|first|upper }}</div>
+                <span class="user-name">{{ user.username }}</span>
+            </div>
+        </div>
     </header>
 
-    <main class="page-shell">
+    <!-- Main content -->
+    <main class="page-shell" id="main-content">
         {% if messages %}
-            <section class="messages">
-                {% for message in messages %}
-                    <div class="message {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </section>
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
         {% endif %}
 
         {% block content %}{% endblock %}
     </main>
+
+{% else %}
+
+    <!-- Unauthenticated — centered auth layout -->
+    <main class="auth-shell">
+        {% if messages %}
+        <div class="messages-container" style="position:fixed;top:1.5rem;right:1.5rem;width:320px;z-index:200;">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+{% endif %}
+
+<script src="{% static 'js/main.js' %}" defer></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

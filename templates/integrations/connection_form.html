@@ -1,13 +1,30 @@
 {% extends "base.html" %}
+{% block title %}Connect LMS{% endblock %}
+{% block page_title %}Connect LMS{% endblock %}
+{% block nav_integrations %}active{% endblock %}
 
 {% block content %}
-<section class="panel form-panel">
-    <h2>Connect an LMS</h2>
-    <p>Use demo mode for project evaluation, or configure live mode if you later obtain real Canvas or Blackboard credentials.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save connection</button>
-    </form>
-</section>
+<div style="max-width: 640px;">
+
+    <div class="section-intro">
+        <p class="eyebrow">Integrations</p>
+        <h1>Connect an LMS</h1>
+        <p>
+            Use <strong style="color: var(--accent);">Demo</strong> mode for evaluation — no credentials required.
+            Live mode requires real Canvas or Blackboard credentials.
+        </p>
+    </div>
+
+    <article class="panel fade-up">
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Connection</button>
+                <a href="{% url 'dashboard:home' %}" class="btn btn--ghost">Cancel</a>
+            </div>
+        </form>
+    </article>
+
+</div>
 {% endblock %}

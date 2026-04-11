@@ -1,13 +1,30 @@
 {% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
 
 {% block content %}
-<section class="panel auth-panel">
-    <h2>Create account</h2>
-    <p>Start building your personal study dashboard.</p>
-    <form method="post">
+<div class="auth-card panel" style="width: 100%; max-width: 440px;">
+
+    <div style="text-align: center; margin-bottom: var(--space-8);">
+        <p class="eyebrow">Academic Aggregator</p>
+        <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); color: var(--text-primary); letter-spacing: 0.04em; margin-top: var(--space-2); line-height: 1;">
+            Create Account
+        </h1>
+        <p style="color: var(--text-muted); font-size: var(--text-sm); margin-top: var(--space-2);">
+            Build your personal study dashboard.
+        </p>
+    </div>
+
+    <form method="post" class="styled-form">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign up</button>
+        <button type="submit" class="btn btn--primary btn--full" style="margin-top: var(--space-4);">
+            Create Account
+        </button>
     </form>
-</section>
+
+    <p style="text-align: center; font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-6);">
+        Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </p>
+
+</div>
 {% endblock %}

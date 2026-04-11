@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 
 from django.contrib.auth.signals import user_logged_in
@@ -71,7 +72,7 @@ def sync_connection(connection):
                     "title": task_payload.get("title", "Imported Task"),
                     "description": task_payload.get("description", ""),
                     "task_type": task_payload.get("type", "assignment"),
-                    "due_at": timezone.datetime.fromisoformat(task_payload["due_at"]),
+                    "due_at": datetime.fromisoformat(task_payload["due_at"]),
                     "weight_percent": Decimal(str(task_payload.get("weight_percent", 0))),
                     "difficulty": task_payload.get("difficulty", "medium"),
                     "estimated_hours": Decimal(str(task_payload.get("estimated_hours", 0))),

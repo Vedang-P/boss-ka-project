@@ -1,27 +1,50 @@
 {% extends "base.html" %}
+{% block title %}Availability{% endblock %}
+{% block page_title %}Availability{% endblock %}
+{% block nav_planner %}active{% endblock %}
 
 {% block content %}
-<section class="grid two-col">
-    <article class="panel form-panel">
-        <h2>Weekly Availability</h2>
-        <p>Define your recurring free study slots so the planner can schedule sessions before deadlines.</p>
-        <form method="post">
+
+<div class="section-intro">
+    <p class="eyebrow">Planner</p>
+    <h1>Weekly Availability</h1>
+    <p>Define your recurring free slots so the planner can schedule sessions before deadlines.</p>
+</div>
+
+<div class="grid-2">
+
+    <article class="panel fade-up">
+        <div class="panel-header">
+            <h2 class="panel-title">Add Slot</h2>
+        </div>
+        <form method="post" class="styled-form">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Save slot</button>
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Slot</button>
+            </div>
         </form>
     </article>
 
-    <article class="panel">
-        <h2>Saved Slots</h2>
-        {% for slot in slots %}
-            <div class="session-card">
-                <strong>{{ slot.get_weekday_display }}</strong>
-                <p>{{ slot.start_time }} to {{ slot.end_time }}</p>
+    <article class="panel fade-up">
+        <div class="panel-header">
+            <h2 class="panel-title">Saved Slots</h2>
+            <a href="{% url 'planner:generate' %}" class="btn btn--ghost btn--sm">Generate sessions</a>
+        </div>
+        {% if slots %}
+            {% for slot in slots %}
+            <div class="data-row">
+                <div class="data-row-left">
+                    <p class="data-row-title">{{ slot.get_weekday_display }}</p>
+                    <p class="data-row-sub">{{ slot.start_time }} &mdash; {{ slot.end_time }}</p>
+                </div>
             </div>
-        {% empty %}
-            <p>No availability saved yet.</p>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No availability saved yet. Add slots on the left.</p>
+        {% endif %}
     </article>
-</section>
+
+</div>
+
 {% endblock %}
